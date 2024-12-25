@@ -1,15 +1,19 @@
-import express from 'express';
+import express from "express";
+import cookieParser from "cookie-parser";
 const app = express();
 const PORT = 3000;
 
 // import the config files
-import './config/mongodb.js';
+import "./config/mongodb.js";
 
 // importing the routes
-import { router } from './routes/index.js';
+import { router } from "./routes/index.js";
 
+app.use(express.json());
+app.use(cookieParser());
 // Define a simple route
-app.use('/', router);
+app.use("/", router);
+
 // everything that starts with / means every possible API route
 
 // Start the server
