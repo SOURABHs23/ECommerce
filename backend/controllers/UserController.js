@@ -44,7 +44,7 @@ export const signin = async (req, res) => {
     // isUserPresent.sessionToken = token;
     // await isUserPresent.save();
     await User.findByIdAndUpdate(
-      isUserPresent._id,
+      { _id: isUserPresent._id },
       { sessionToken: token },
       { new: true, runValidators: true } // `new: true` returns the updated document
     );
