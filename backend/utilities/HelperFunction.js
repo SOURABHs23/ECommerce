@@ -18,14 +18,8 @@ export const sendEmail = async (emails, subject, message) => {
   }
 };
 
-const generateOTP = () => {
-  return Math.floor(1000 + Math.random() * 9000);
-};
-
-export const sendSms = async (mobiles) => {
+export const sendSms = async (mobiles, otp) => {
   try {
-    const otp = generateOTP();
-    console.log(otp);
     const API_KEY =
       "NeXEiZ9HdLPfRu7Uky1QMvSIxcsrBJolwjGqY5p0F8C3hzT6bDZP58CmIa6we2xqNtWouzgjbiB9L1FE";
 

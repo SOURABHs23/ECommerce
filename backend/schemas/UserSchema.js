@@ -10,6 +10,8 @@ const UserSchema = new Schema(
     password: { type: String, required: true },
     mobile: { type: Number, required: true },
     sessionToken: { type: String },
+    verifyEmail: { type: Boolean, required: true, default: false },
+    verifyMobile: { type: Boolean, required: true, default: false },
   },
   { timestamps: true }
 );
