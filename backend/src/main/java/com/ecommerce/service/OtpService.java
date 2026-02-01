@@ -47,16 +47,16 @@ public class OtpService {
             User user = userRepository.findBySessionToken(jwt)
                     .orElseThrow(() -> new BadRequestException("User not found"));
             mobiles = List.of(user.getMobile());
-
-            // Save OTP
-            Otp otp = new Otp();
-            otp.setJwt(jwt);
-            otp.setOtp(otpValue);
-            otpRepository.save(otp);
-
-            // Schedule deletion after expiration
-            scheduleOtpDeletion(jwt);
         }
+
+        // Save OTP (always, regardless of mobile source)
+        Otp otp = new Otp();
+        otp.setJwt(jwt);
+        otp.setOtp(otpValue);
+        otpRepository.save(otp);
+
+        // Schedule deletion after expiration
+        scheduleOtpDeletion(jwt);
 
         // Send SMS
         boolean success = smsService.sendSms(mobiles, otpValue);
@@ -90,9 +90,13 @@ public class OtpService {
 
     @Async
     protected void scheduleOtpDeletion(String jwt) {
+        System.out.println("OTP deletion scheduled for JWT ending in: ..." + jwt.substring(jwt.length() - 10)
+                + " (will delete after " + otpExpirationSeconds + " seconds)");
         scheduler.schedule(() -> {
             try {
                 otpRepository.deleteByJwt(jwt);
+                System.out.println(
+                        "✓ OTP automatically deleted for JWT ending in: ..." + jwt.substring(jwt.length() - 10));
             } catch (Exception e) {
                 // Log error
                 System.err.println("Error deleting OTP: " + e.getMessage());
