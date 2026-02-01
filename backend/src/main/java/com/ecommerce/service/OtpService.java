@@ -5,34 +5,34 @@ import com.ecommerce.entity.User;
 import com.ecommerce.exception.BadRequestException;
 import com.ecommerce.repository.OtpRepository;
 import com.ecommerce.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class OtpService {
 
-    @Autowired
-    private OtpRepository otpRepository;
+    private static final Logger logger = LoggerFactory.getLogger(OtpService.class);
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private SmsService smsService;
+    private final OtpRepository otpRepository;
+    private final UserRepository userRepository;
+    private final SmsService smsService;
 
     @Value("${otp.expiration.seconds}")
     private int otpExpirationSeconds;
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    public OtpService(OtpRepository otpRepository, UserRepository userRepository, SmsService smsService) {
+        this.otpRepository = otpRepository;
+        this.userRepository = userRepository;
+        this.smsService = smsService;
+    }
 
     public Integer generateOtp() {
         Random random = new Random();
@@ -49,14 +49,13 @@ public class OtpService {
             mobiles = List.of(user.getMobile());
         }
 
-        // Save OTP (always, regardless of mobile source)
+        // Save OTP
         Otp otp = new Otp();
         otp.setJwt(jwt);
         otp.setOtp(otpValue);
         otpRepository.save(otp);
 
-        // Schedule deletion after expiration
-        scheduleOtpDeletion(jwt);
+        logger.info("OTP generated and saved. Will expire in {} seconds", otpExpirationSeconds);
 
         // Send SMS
         boolean success = smsService.sendSms(mobiles, otpValue);
@@ -85,22 +84,21 @@ public class OtpService {
         // Delete OTP
         otpRepository.deleteByJwt(jwt);
 
+        logger.info("OTP verified successfully for user: {}", user.getEmail());
         return "OTP verified successfully";
     }
 
-    @Async
-    protected void scheduleOtpDeletion(String jwt) {
-        System.out.println("OTP deletion scheduled for JWT ending in: ..." + jwt.substring(jwt.length() - 10)
-                + " (will delete after " + otpExpirationSeconds + " seconds)");
-        scheduler.schedule(() -> {
-            try {
-                otpRepository.deleteByJwt(jwt);
-                System.out.println(
-                        "✓ OTP automatically deleted for JWT ending in: ..." + jwt.substring(jwt.length() - 10));
-            } catch (Exception e) {
-                // Log error
-                System.err.println("Error deleting OTP: " + e.getMessage());
-            }
-        }, otpExpirationSeconds, TimeUnit.SECONDS);
+    /**
+     * Scheduled task to clean up expired OTPs.
+     * Runs every minute to remove OTPs older than the configured expiration time.
+     */
+    @Scheduled(fixedRate = 60000) // Run every 60 seconds
+    @Transactional
+    public void cleanupExpiredOtps() {
+        LocalDateTime expirationTime = LocalDateTime.now().minusSeconds(otpExpirationSeconds);
+        int deletedCount = otpRepository.deleteExpiredOtps(expirationTime);
+        if (deletedCount > 0) {
+            logger.info("Cleaned up {} expired OTPs", deletedCount);
+        }
     }
 }
