@@ -3,6 +3,8 @@ package com.ecommerce.service;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Service
 public class SmsService {
+
+    private static final Logger logger = LoggerFactory.getLogger(SmsService.class);
 
     @Value("${twilio.account.sid}")
     private String accountSid;
@@ -24,6 +28,7 @@ public class SmsService {
     @PostConstruct
     public void initTwilio() {
         Twilio.init(accountSid, authToken);
+        logger.info("Twilio initialized successfully");
     }
 
     public boolean sendSms(List<Long> mobiles, Integer otp) {
@@ -31,21 +36,19 @@ public class SmsService {
             String messageBody = String.format("Your OTP code is: %d. Valid for 30 seconds.", otp);
 
             for (Long mobile : mobiles) {
-                // Format mobile number with country code if not present
                 String toPhoneNumber = formatPhoneNumber(mobile);
 
                 Message message = Message.creator(
-                        new PhoneNumber(toPhoneNumber), // To
-                        new PhoneNumber(fromPhoneNumber), // From
+                        new PhoneNumber(toPhoneNumber),
+                        new PhoneNumber(fromPhoneNumber),
                         messageBody).create();
 
-                System.out.println("SMS sent successfully! SID: " + message.getSid());
+                logger.info("SMS sent successfully! SID: {}", message.getSid());
             }
 
             return true;
         } catch (Exception e) {
-            System.err.println("Error sending SMS via Twilio: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error sending SMS via Twilio: {}", e.getMessage(), e);
             return false;
         }
     }

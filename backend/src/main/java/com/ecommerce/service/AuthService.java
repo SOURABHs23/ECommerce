@@ -7,21 +7,26 @@ import com.ecommerce.entity.User;
 import com.ecommerce.exception.BadRequestException;
 import com.ecommerce.repository.UserRepository;
 import com.ecommerce.security.JwtTokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+            JwtTokenProvider jwtTokenProvider) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
     public AuthResponse signup(SignUpRequest request) {
         // Check if user already exists
@@ -41,6 +46,7 @@ public class AuthService {
 
         userRepository.save(user);
 
+        logger.info("New user registered: {}", request.getEmail());
         return new AuthResponse(true, "Signup successfully", null);
     }
 
@@ -51,6 +57,7 @@ public class AuthService {
 
         // Verify password
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            logger.warn("Failed login attempt for user: {}", request.getEmail());
             throw new BadRequestException("Password and email not matching");
         }
 
@@ -61,6 +68,7 @@ public class AuthService {
         user.setSessionToken(token);
         userRepository.save(user);
 
+        logger.info("User logged in: {}", request.getEmail());
         return new AuthResponse(true, "User logged in", token);
     }
 }
