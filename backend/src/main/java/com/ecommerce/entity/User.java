@@ -3,34 +3,37 @@ package com.ecommerce.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "users")
+@Entity
+@Table(name = "users")
+@EntityListeners(AuditingEntityListener.class)
 public class User {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String firstname;
 
     private String lastname;
 
-    @Indexed(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String password;
 
     private Long mobile;
 
+    @Column(length = 1000)
     private String sessionToken;
 
     private Boolean verifyEmail = false;
@@ -38,6 +41,7 @@ public class User {
     private Boolean verifyMobile = false;
 
     @CreatedDate
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate

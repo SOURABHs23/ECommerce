@@ -55,7 +55,7 @@ public class AuthService {
         }
 
         // Generate JWT token
-        String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail());
+        String token = jwtTokenProvider.generateToken(user.getId().toString(), user.getEmail());
 
         // Update session token
         user.setSessionToken(token);

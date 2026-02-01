@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String userId = tokenProvider.getUserIdFromToken(jwt);
 
                 // Verify user exists and token matches session token
-                Optional<User> userOpt = userRepository.findById(userId);
+                Optional<User> userOpt = userRepository.findById(Long.parseLong(userId));
                 if (userOpt.isPresent()) {
                     User user = userOpt.get();
                     if (jwt.equals(user.getSessionToken())) {
