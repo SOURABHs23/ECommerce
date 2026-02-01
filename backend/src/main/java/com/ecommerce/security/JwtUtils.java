@@ -24,7 +24,7 @@ public class JwtUtils {
      * @param request the HTTP servlet request
      * @return the JWT token or null if not found
      */
-    public String extractJwtFromRequest(HttpServletRequest request) {
+    public static String extractJwtFromRequest(HttpServletRequest request) {
         // Try Authorization header first
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
