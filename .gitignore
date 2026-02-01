@@ -1,2 +1,16 @@
 backend/node_module
 frontend/node_modules
+
+# Environment variables (contains secrets)
+backend/.env
+.env
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Build artifacts
+backend/target/
+frontend/build/
+frontend/dist/
