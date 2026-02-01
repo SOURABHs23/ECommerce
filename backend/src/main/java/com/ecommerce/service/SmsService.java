@@ -1,40 +1,63 @@
 package com.ecommerce.service;
 
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
+import jakarta.annotation.PostConstruct;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SmsService {
 
-    @Value("${sms.api.key}")
-    private String apiKey;
+    @Value("${twilio.account.sid}")
+    private String accountSid;
 
-    @Value("${sms.api.url}")
-    private String apiUrl;
+    @Value("${twilio.auth.token}")
+    private String authToken;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Value("${twilio.phone.number}")
+    private String fromPhoneNumber;
+
+    @PostConstruct
+    public void initTwilio() {
+        Twilio.init(accountSid, authToken);
+    }
 
     public boolean sendSms(List<Long> mobiles, Integer otp) {
         try {
-            String mobileNumbers = mobiles.stream()
-                    .map(String::valueOf)
-                    .collect(Collectors.joining(","));
+            String messageBody = String.format("Your OTP code is: %d. Valid for 30 seconds.", otp);
 
-            String url = String.format(
-                    "%s?authorization=%s&variables_values=%d&route=otp&numbers=%s",
-                    apiUrl, apiKey, otp, mobileNumbers);
+            for (Long mobile : mobiles) {
+                // Format mobile number with country code if not present
+                String toPhoneNumber = formatPhoneNumber(mobile);
 
-            String response = restTemplate.getForObject(url, String.class);
-            System.out.println("SMS Response: " + response);
+                Message message = Message.creator(
+                        new PhoneNumber(toPhoneNumber), // To
+                        new PhoneNumber(fromPhoneNumber), // From
+                        messageBody).create();
+
+                System.out.println("SMS sent successfully! SID: " + message.getSid());
+            }
 
             return true;
         } catch (Exception e) {
-            System.err.println("Error sending SMS: " + e.getMessage());
+            System.err.println("Error sending SMS via Twilio: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
+    }
+
+    private String formatPhoneNumber(Long mobile) {
+        String phoneNumber = mobile.toString();
+
+        // If number doesn't start with +, assume it's an Indian number and add +91
+        if (!phoneNumber.startsWith("+")) {
+            phoneNumber = "+91" + phoneNumber;
+        }
+
+        return phoneNumber;
     }
 }

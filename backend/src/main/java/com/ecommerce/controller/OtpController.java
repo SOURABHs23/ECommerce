@@ -27,7 +27,14 @@ public class OtpController {
     @PostMapping("/send-email")
     public ResponseEntity<ApiResponse> sendEmail(@Valid @RequestBody SendEmailRequest request) {
         emailService.sendEmail(request.getEmails(), request.getSubject(), request.getMessage());
-        return ResponseEntity.ok(new ApiResponse(true, "Email sent successfully"));
+
+        // Create response data with email details
+        var responseData = new java.util.HashMap<String, Object>();
+        responseData.put("recipients", request.getEmails());
+        responseData.put("subject", request.getSubject());
+        responseData.put("sentAt", java.time.LocalDateTime.now());
+
+        return ResponseEntity.ok(new ApiResponse(true, "Email sent successfully", responseData));
     }
 
     @PostMapping("/send-sms")
@@ -35,7 +42,13 @@ public class OtpController {
             HttpServletRequest httpRequest) {
         String jwt = getJwtFromRequest(httpRequest);
         String message = otpService.sendSms(request.getMobiles(), jwt);
-        return ResponseEntity.ok(new ApiResponse(true, message));
+
+        // Create response data with mobile numbers
+        var responseData = new java.util.HashMap<String, Object>();
+        responseData.put("mobiles", request.getMobiles());
+        responseData.put("sentAt", java.time.LocalDateTime.now());
+
+        return ResponseEntity.ok(new ApiResponse(true, message, responseData));
     }
 
     @GetMapping("/verify/{otp}")
@@ -43,7 +56,13 @@ public class OtpController {
             HttpServletRequest httpRequest) {
         String jwt = getJwtFromRequest(httpRequest);
         String message = otpService.verifyOtp(otp, jwt);
-        return ResponseEntity.ok(new ApiResponse(true, message));
+
+        // Create response data with verification status
+        var responseData = new java.util.HashMap<String, Object>();
+        responseData.put("verified", true);
+        responseData.put("verifiedAt", java.time.LocalDateTime.now());
+
+        return ResponseEntity.ok(new ApiResponse(true, message, responseData));
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
