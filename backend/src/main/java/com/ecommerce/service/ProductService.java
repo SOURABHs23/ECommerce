@@ -27,10 +27,13 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ImageService imageService;
 
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,
+            ImageService imageService) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.imageService = imageService;
     }
 
     public Page<ProductResponse> getAllProducts(Pageable pageable) {
@@ -92,14 +95,19 @@ public class ProductService {
             product.setCategory(category);
         }
 
-        // Add images
-        if (request.getImageUrls() != null) {
-            for (int i = 0; i < request.getImageUrls().size(); i++) {
-                ProductImage image = new ProductImage();
-                image.setImageUrl(request.getImageUrls().get(i));
-                image.setDisplayOrder(i);
-                product.addImage(image);
-            }
+        // Add images - auto-fetch from image API if none provided
+        List<String> imageUrls = request.getImageUrls();
+        if (imageUrls == null || imageUrls.isEmpty()) {
+            // Auto-fetch real product images based on product name
+            imageUrls = imageService.fetchProductImages(request.getName(), 3);
+            logger.info("Auto-fetched {} images for product: {}", imageUrls.size(), request.getName());
+        }
+
+        for (int i = 0; i < imageUrls.size(); i++) {
+            ProductImage image = new ProductImage();
+            image.setImageUrl(imageUrls.get(i));
+            image.setDisplayOrder(i);
+            product.addImage(image);
         }
 
         product = productRepository.save(product);
