@@ -25,12 +25,10 @@ public class OtpController {
 
     private final EmailService emailService;
     private final OtpService otpService;
-    private final JwtUtils jwtUtils;
 
-    public OtpController(EmailService emailService, OtpService otpService, JwtUtils jwtUtils) {
+    public OtpController(EmailService emailService, OtpService otpService) {
         this.emailService = emailService;
         this.otpService = otpService;
-        this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/send-email")
@@ -49,7 +47,7 @@ public class OtpController {
     @PostMapping("/send-sms")
     public ResponseEntity<ApiResponse> sendSms(@RequestBody SendSmsRequest request,
             HttpServletRequest httpRequest) {
-        String jwt = jwtUtils.extractJwtFromRequest(httpRequest);
+        String jwt = JwtUtils.extractJwtFromRequest(httpRequest);
         logger.info("Sending SMS OTP request");
         String message = otpService.sendSms(request.getMobiles(), jwt);
 
@@ -63,7 +61,7 @@ public class OtpController {
     @GetMapping("/verify/{otp}")
     public ResponseEntity<ApiResponse> verifyOtp(@PathVariable String otp,
             HttpServletRequest httpRequest) {
-        String jwt = jwtUtils.extractJwtFromRequest(httpRequest);
+        String jwt = JwtUtils.extractJwtFromRequest(httpRequest);
         logger.info("Verifying OTP");
         String message = otpService.verifyOtp(otp, jwt);
 

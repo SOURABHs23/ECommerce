@@ -92,7 +92,7 @@ public class OtpService {
      * Scheduled task to clean up expired OTPs.
      * Runs every minute to remove OTPs older than the configured expiration time.
      */
-    @Scheduled(fixedRate = 60000) // Run every 60 seconds
+    @Scheduled(fixedRate = 300000) // Run every 5 minutes (300,000 ms)
     @Transactional
     public void cleanupExpiredOtps() {
         LocalDateTime expirationTime = LocalDateTime.now().minusSeconds(otpExpirationSeconds);
