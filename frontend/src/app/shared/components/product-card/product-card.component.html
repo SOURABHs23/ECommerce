@@ -1,0 +1,30 @@
+<article class="product-card" [routerLink]="['/products', product.id]">
+    <div class="product-image">
+        @if (product.images && product.images.length > 0) {
+        <img [src]="product.images[0]" [alt]="product.name" />
+        } @else {
+        <div class="no-image">📦</div>
+        }
+        @if (product.featured) {
+        <span class="featured-badge">Featured</span>
+        }
+        @if (!product.inStock) {
+        <span class="out-of-stock-badge">Out of Stock</span>
+        }
+    </div>
+
+    <div class="product-info">
+        <p class="product-category">{{ product.categoryName || 'Uncategorized' }}</p>
+        <h3 class="product-name">{{ product.name }}</h3>
+        @if (product.brand) {
+        <p class="product-brand">{{ product.brand }}</p>
+        }
+
+        <div class="product-footer">
+            <span class="product-price">{{ product.price | currency }}</span>
+            <button class="add-to-cart-btn" (click)="onAddToCart($event)" [disabled]="!product.inStock">
+                {{ product.inStock ? 'Add to Cart' : 'Sold Out' }}
+            </button>
+        </div>
+    </div>
+</article>

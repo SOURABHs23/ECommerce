@@ -1,0 +1,94 @@
+<div class="cart-container">
+    <div class="cart-header">
+        <h1>Shopping Cart</h1>
+        @if (cartService.cart()?.items?.length) {
+        <p>{{ cartService.cartItemCount() }} items in your cart</p>
+        }
+    </div>
+
+    @if (!authService.isAuthenticated()) {
+    <div class="auth-prompt">
+        <span class="auth-icon">🔐</span>
+        <h2>Please sign in to view your cart</h2>
+        <a routerLink="/login" [queryParams]="{returnUrl: '/cart'}" class="signin-btn">Sign In</a>
+    </div>
+    } @else if (loading) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+    </div>
+    } @else if (!cartService.cart()?.items?.length) {
+    <div class="empty-cart">
+        <span class="empty-icon">🛒</span>
+        <h2>Your cart is empty</h2>
+        <p>Looks like you haven't added any items yet</p>
+        <a routerLink="/products" class="browse-btn">Browse Products</a>
+    </div>
+    } @else {
+    <div class="cart-layout">
+        <div class="cart-items">
+            @for (item of cartService.cart()!.items; track item.id) {
+            <article class="cart-item">
+                <div class="item-image">
+                    @if (item.productImage) {
+                    <img [src]="item.productImage" [alt]="item.productName" />
+                    } @else {
+                    <div class="no-image">📦</div>
+                    }
+                </div>
+
+                <div class="item-details">
+                    <h3>{{ item.productName }}</h3>
+                    <p class="item-price">{{ item.price | currency }} each</p>
+
+                    @if (!item.inStock) {
+                    <span class="stock-warning">⚠️ Limited stock</span>
+                    }
+                </div>
+
+                <div class="item-quantity">
+                    <button (click)="updateQuantity(item, item.quantity - 1)" [disabled]="item.quantity <= 1">-</button>
+                    <span>{{ item.quantity }}</span>
+                    <button (click)="updateQuantity(item, item.quantity + 1)">+</button>
+                </div>
+
+                <div class="item-subtotal">
+                    <span class="subtotal-label">Subtotal</span>
+                    <span class="subtotal-price">{{ item.subtotal | currency }}</span>
+                </div>
+
+                <button class="remove-btn" (click)="removeItem(item.id)">
+                    <span>×</span>
+                </button>
+            </article>
+            }
+        </div>
+
+        <aside class="cart-summary">
+            <h2>Order Summary</h2>
+
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>{{ cartService.cartTotal() | currency }}</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Shipping</span>
+                <span class="free-shipping">FREE</span>
+            </div>
+
+            <div class="summary-total">
+                <span>Total</span>
+                <span>{{ cartService.cartTotal() | currency }}</span>
+            </div>
+
+            <button class="checkout-btn" routerLink="/checkout">
+                Proceed to Checkout
+            </button>
+
+            <a routerLink="/products" class="continue-shopping">
+                ← Continue Shopping
+            </a>
+        </aside>
+    </div>
+    }
+</div>

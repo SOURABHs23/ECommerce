@@ -1,0 +1,73 @@
+<div class="products-container">
+    <div class="products-header">
+        <h1>Discover Products</h1>
+        <p>Find the perfect items for you</p>
+    </div>
+
+    <div class="products-layout">
+        <!-- Sidebar Filters -->
+        <aside class="filters-sidebar">
+            <div class="filter-section">
+                <h3>Search</h3>
+                <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="searchProducts()"
+                    placeholder="Search products..." class="search-input" />
+            </div>
+
+            <div class="filter-section">
+                <h3>Categories</h3>
+                <div class="category-list">
+                    <button class="category-btn" [class.active]="!selectedCategory" (click)="selectCategory(null)">
+                        All Products
+                    </button>
+                    @for (category of categories(); track category.id) {
+                    <button class="category-btn" [class.active]="selectedCategory === category.id"
+                        (click)="selectCategory(category.id)">
+                        {{ category.name }}
+                        <span class="count">{{ category.productCount }}</span>
+                    </button>
+                    }
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>Price Range</h3>
+                <div class="price-inputs">
+                    <input type="number" [(ngModel)]="minPrice" placeholder="Min" class="price-input" />
+                    <span>-</span>
+                    <input type="number" [(ngModel)]="maxPrice" placeholder="Max" class="price-input" />
+                </div>
+                <button class="apply-filter-btn" (click)="applyFilters()">Apply Filters</button>
+            </div>
+        </aside>
+
+        <!-- Products Grid -->
+        <main class="products-main">
+            @if (loading()) {
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Loading products...</p>
+            </div>
+            } @else if (products().length === 0) {
+            <div class="empty-state">
+                <span class="empty-icon">📦</span>
+                <h2>No products found</h2>
+                <p>Try adjusting your filters or search query</p>
+            </div>
+            } @else {
+            <div class="products-grid">
+                @for (product of products(); track product.id) {
+                <app-product-card [product]="product" (addToCart)="onAddToCart($event)" />
+                }
+            </div>
+
+            @if (pageResponse() && !pageResponse()!.last) {
+            <div class="load-more">
+                <button class="load-more-btn" (click)="loadMore()" [disabled]="loading()">
+                    Load More
+                </button>
+            </div>
+            }
+            }
+        </main>
+    </div>
+</div>

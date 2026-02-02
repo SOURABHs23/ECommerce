@@ -1,0 +1,54 @@
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Create Account</h1>
+            <p>Join us and start shopping</p>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+            @if (errorMessage) {
+            <div class="error-alert">{{ errorMessage }}</div>
+            }
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <input id="firstname" type="text" formControlName="firstname" placeholder="John"
+                        [class.error]="isFieldInvalid('firstname')" />
+                </div>
+
+                <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <input id="lastname" type="text" formControlName="lastname" placeholder="Doe"
+                        [class.error]="isFieldInvalid('lastname')" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input id="email" type="email" formControlName="email" placeholder="john.doe@example.com"
+                    [class.error]="isFieldInvalid('email')" />
+            </div>
+
+            <div class="form-group">
+                <label for="mobile">Mobile Number</label>
+                <input id="mobile" type="tel" formControlName="mobile" placeholder="9876543210"
+                    [class.error]="isFieldInvalid('mobile')" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password" type="password" formControlName="password" placeholder="Create a strong password"
+                    [class.error]="isFieldInvalid('password')" />
+            </div>
+
+            <button type="submit" class="submit-btn" [disabled]="loading">
+                {{ loading ? 'Creating account...' : 'Create Account' }}
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a routerLink="/login">Sign in</a></p>
+        </div>
+    </div>
+</div>
