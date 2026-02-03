@@ -62,6 +62,6 @@ public class Address {
     private LocalDateTime updatedAt;
 
     public enum AddressType {
-        HOME, WORK, OTHER
+        HOME, WORK, OTHER, SHIPPING, BILLING
     }
 }
