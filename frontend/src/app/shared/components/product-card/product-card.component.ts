@@ -17,7 +17,6 @@ export class ProductCardComponent {
   private router = inject(Router);
 
   onCardClick(): void {
-    console.log('Product card clicked:', this.product.id);
     this.router.navigate(['/products', this.product.id]);
   }
 

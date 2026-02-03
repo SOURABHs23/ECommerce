@@ -51,8 +51,6 @@ export class ProductFormComponent {
       featured: false
     };
 
-    console.log('Sending Product Request:', productRequest);
-
     this.productService.createProduct(productRequest).subscribe({
       next: () => {
         this.loading = false;
