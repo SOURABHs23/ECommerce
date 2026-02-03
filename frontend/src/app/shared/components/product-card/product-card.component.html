@@ -1,4 +1,4 @@
-<article class="product-card" [routerLink]="['/products', product.id]">
+<article class="product-card" (click)="onCardClick()">
     <div class="product-image">
         @if (product.images && product.images.length > 0) {
         <img [src]="product.images[0]" [alt]="product.name" />

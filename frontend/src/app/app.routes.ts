@@ -1,7 +1,24 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './core/guards/admin.guard';
 
 
 export const routes: Routes = [
+    {
+        path: 'admin',
+        canActivate: [adminGuard],
+        children: [
+            {
+                path: '',
+                loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
+                title: 'Admin Dashboard'
+            },
+            {
+                path: 'products/new',
+                loadComponent: () => import('./features/admin/product-form/product-form.component').then(m => m.ProductFormComponent),
+                title: 'Add New Product'
+            }
+        ]
+    },
     {
         path: '',
         loadComponent: () => import('./features/products/product-list/product-list.component')

@@ -1,6 +1,6 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { Product } from '../../../core/models';
 
 @Component({
@@ -13,6 +13,13 @@ import { Product } from '../../../core/models';
 export class ProductCardComponent {
   @Input({ required: true }) product!: Product;
   @Output() addToCart = new EventEmitter<Product>();
+
+  private router = inject(Router);
+
+  onCardClick(): void {
+    console.log('Product card clicked:', this.product.id);
+    this.router.navigate(['/products', this.product.id]);
+  }
 
   onAddToCart(event: Event): void {
     event.preventDefault();

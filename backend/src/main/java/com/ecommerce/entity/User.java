@@ -40,6 +40,8 @@ public class User {
 
     private Boolean verifyMobile = false;
 
+    private String role = "ROLE_USER";
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;

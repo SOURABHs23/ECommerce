@@ -8,6 +8,9 @@
         <div class="nav-links">
             <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
             <a routerLink="/products" routerLinkActive="active">Products</a>
+            @if (authService.isAdmin()) {
+            <a routerLink="/admin/products/new" routerLinkActive="active" class="admin-link">Add Product</a>
+            }
         </div>
 
         <div class="nav-actions">

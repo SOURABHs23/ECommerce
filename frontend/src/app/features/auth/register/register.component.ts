@@ -20,8 +20,8 @@ export class RegisterComponent {
     firstname: ['', Validators.required],
     lastname: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    mobile: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    mobile: ['', [Validators.required]],
+    password: ['', [Validators.required]]
   });
 
   loading = false;

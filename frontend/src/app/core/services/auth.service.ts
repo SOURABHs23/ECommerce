@@ -4,6 +4,14 @@ import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, SignUpRequest, SignInRequest, User } from '../models';
+import { jwtDecode } from 'jwt-decode';
+
+interface DecodedToken {
+    sub: string;
+    role: string;
+    exp: number;
+    iat: number;
+}
 
 @Injectable({
     providedIn: 'root'
@@ -15,6 +23,17 @@ export class AuthService {
     private tokenSignal = signal<string | null>(this.getStoredToken());
 
     isAuthenticated = computed(() => !!this.tokenSignal());
+
+    isAdmin = computed(() => {
+        const token = this.tokenSignal();
+        if (!token) return false;
+        try {
+            const decoded = jwtDecode<DecodedToken>(token);
+            return decoded.role === 'ROLE_ADMIN';
+        } catch (e) {
+            return false;
+        }
+    });
 
     constructor(
         private http: HttpClient,
