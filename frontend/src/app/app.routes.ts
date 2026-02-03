@@ -56,6 +56,12 @@ export const routes: Routes = [
         title: 'Shopping Cart - ShopHub'
     },
     {
+        path: 'checkout',
+        loadComponent: () => import('./features/checkout/checkout/checkout.component')
+            .then(m => m.CheckoutComponent),
+        title: 'Checkout - ShopHub'
+    },
+    {
         path: '**',
         redirectTo: ''
     }

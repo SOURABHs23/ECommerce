@@ -24,34 +24,27 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final AddressRepository addressRepository;
     private final ProductRepository productRepository;
+    private final EmailService emailService;
 
     public OrderService(OrderRepository orderRepository, CartRepository cartRepository,
-            AddressRepository addressRepository, ProductRepository productRepository) {
+            AddressRepository addressRepository, ProductRepository productRepository, EmailService emailService) {
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
         this.addressRepository = addressRepository;
         this.productRepository = productRepository;
+        this.emailService = emailService;
     }
 
     public Page<OrderResponse> getUserOrders(Long userId, Pageable pageable) {
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .map(OrderResponse::fromEntity);
     }
-
-    public OrderResponse getOrderById(Long orderId, Long userId) {
-        Order order = orderRepository.findByIdAndUserIdWithItems(orderId, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        return OrderResponse.fromEntity(order);
-    }
-
-    public OrderResponse getOrderByNumber(String orderNumber) {
-        Order order = orderRepository.findByOrderNumber(orderNumber)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        return OrderResponse.fromEntity(order);
-    }
+    // ... existing methods ...
 
     @Transactional
     public OrderResponse createOrder(OrderRequest request, User user) {
+        // ... (existing logic) ...
+
         // Get cart
         Cart cart = cartRepository.findByUserIdWithItems(user.getId())
                 .orElseThrow(() -> new BadRequestException("Cart is empty"));
@@ -115,6 +108,23 @@ public class OrderService {
         cartRepository.save(cart);
 
         logger.info("Created order {} for user {}", order.getOrderNumber(), user.getEmail());
+
+        // Send confirmation email
+        OrderResponse response = OrderResponse.fromEntity(order);
+        emailService.sendOrderConfirmation(user.getEmail(), order.getOrderNumber(), response);
+
+        return response;
+    }
+
+    public OrderResponse getOrderById(Long orderId, Long userId) {
+        Order order = orderRepository.findByIdAndUserIdWithItems(orderId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        return OrderResponse.fromEntity(order);
+    }
+
+    public OrderResponse getOrderByNumber(String orderNumber) {
+        Order order = orderRepository.findByOrderNumber(orderNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
         return OrderResponse.fromEntity(order);
     }
 

@@ -1,7 +1,7 @@
 {
     "info": {
         "name": "ECommerce API - Phase 1",
-        "description": "Complete API collection for ECommerce Phase 1: Products, Categories, Cart, Orders, Addresses",
+        "description": "Complete API collection for ECommerce Phase 1: Authentication, Products, Categories, Cart, Orders, Addresses",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "variable": [
@@ -231,7 +231,7 @@
                     }
                 },
                 {
-                    "name": "Create Category",
+                    "name": "Create Category (Admin)",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -242,7 +242,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Electronics\",\n  \"description\": \"Electronic devices and accessories\",\n  \"imageUrl\": \"https://example.com/electronics.jpg\"\n}"
+                            "raw": "{\n  \"name\": \"Electronics\",\n  \"description\": \"Electronic devices\",\n  \"imageUrl\": \"https://example.com/electronics.jpg\"\n}"
                         },
                         "url": {
                             "raw": "{{base_url}}/api/categories",
@@ -257,33 +257,7 @@
                     }
                 },
                 {
-                    "name": "Create Subcategory",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"name\": \"Smartphones\",\n  \"description\": \"Mobile phones and smartphones\",\n  \"parentCategoryId\": 1\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/categories",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "categories"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Update Category",
+                    "name": "Update Category (Admin)",
                     "request": {
                         "method": "PUT",
                         "header": [
@@ -294,7 +268,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Electronics & Gadgets\",\n  \"description\": \"Updated description\"\n}"
+                            "raw": "{\n  \"name\": \"Electronics Updated\",\n  \"description\": \"Updated description\"\n}"
                         },
                         "url": {
                             "raw": "{{base_url}}/api/categories/1",
@@ -310,7 +284,7 @@
                     }
                 },
                 {
-                    "name": "Delete Category",
+                    "name": "Delete Category (Admin)",
                     "request": {
                         "method": "DELETE",
                         "url": {
@@ -379,7 +353,7 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{base_url}}/api/products/search?query=phone&page=0&size=12",
+                            "raw": "{{base_url}}/api/products/search?query=iPhone",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -391,98 +365,14 @@
                             "query": [
                                 {
                                     "key": "query",
-                                    "value": "phone"
-                                },
-                                {
-                                    "key": "page",
-                                    "value": "0"
-                                },
-                                {
-                                    "key": "size",
-                                    "value": "12"
+                                    "value": "iPhone"
                                 }
                             ]
                         }
                     }
                 },
                 {
-                    "name": "Filter Products",
-                    "request": {
-                        "method": "GET",
-                        "url": {
-                            "raw": "{{base_url}}/api/products/filter?categoryId=1&minPrice=100&maxPrice=50000",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "products",
-                                "filter"
-                            ],
-                            "query": [
-                                {
-                                    "key": "categoryId",
-                                    "value": "1"
-                                },
-                                {
-                                    "key": "minPrice",
-                                    "value": "100"
-                                },
-                                {
-                                    "key": "maxPrice",
-                                    "value": "50000"
-                                }
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Get Featured Products",
-                    "request": {
-                        "method": "GET",
-                        "url": {
-                            "raw": "{{base_url}}/api/products/featured",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "products",
-                                "featured"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Get Products by Category",
-                    "request": {
-                        "method": "GET",
-                        "url": {
-                            "raw": "{{base_url}}/api/products/category/1?page=0&size=12",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "products",
-                                "category",
-                                "1"
-                            ],
-                            "query": [
-                                {
-                                    "key": "page",
-                                    "value": "0"
-                                },
-                                {
-                                    "key": "size",
-                                    "value": "12"
-                                }
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Create Product",
+                    "name": "Create Product (Admin)",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -493,7 +383,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"iPhone 15 Pro\",\n  \"description\": \"Latest Apple smartphone with A17 Pro chip\",\n  \"price\": 134900,\n  \"stock\": 50,\n  \"sku\": \"IPHONE-15-PRO-256\",\n  \"brand\": \"Apple\",\n  \"categoryId\": 1,\n  \"imageUrls\": [\n    \"https://example.com/iphone1.jpg\",\n    \"https://example.com/iphone2.jpg\"\n  ],\n  \"featured\": true\n}"
+                            "raw": "{\n  \"name\": \"New Product\",\n  \"description\": \"Product Description\",\n  \"price\": 99.99,\n  \"stock\": 100,\n  \"categoryId\": 1\n}"
                         },
                         "url": {
                             "raw": "{{base_url}}/api/products",
@@ -508,7 +398,7 @@
                     }
                 },
                 {
-                    "name": "Update Product",
+                    "name": "Update Product (Admin)",
                     "request": {
                         "method": "PUT",
                         "header": [
@@ -519,7 +409,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"iPhone 15 Pro Max\",\n  \"description\": \"Updated description\",\n  \"price\": 159900,\n  \"stock\": 30,\n  \"sku\": \"IPHONE-15-PROMAX-256\",\n  \"brand\": \"Apple\",\n  \"categoryId\": 1,\n  \"featured\": true\n}"
+                            "raw": "{\n  \"name\": \"Updated Product\",\n  \"price\": 149.99\n}"
                         },
                         "url": {
                             "raw": "{{base_url}}/api/products/1",
@@ -535,31 +425,7 @@
                     }
                 },
                 {
-                    "name": "Update Stock",
-                    "request": {
-                        "method": "PATCH",
-                        "url": {
-                            "raw": "{{base_url}}/api/products/1/stock?quantity=100",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "products",
-                                "1",
-                                "stock"
-                            ],
-                            "query": [
-                                {
-                                    "key": "quantity",
-                                    "value": "100"
-                                }
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Delete Product",
+                    "name": "Delete Product (Admin)",
                     "request": {
                         "method": "DELETE",
                         "url": {
@@ -570,132 +436,6 @@
                             "path": [
                                 "api",
                                 "products",
-                                "1"
-                            ]
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            "name": "Addresses",
-            "item": [
-                {
-                    "name": "Get User Addresses",
-                    "request": {
-                        "method": "GET",
-                        "url": {
-                            "raw": "{{base_url}}/api/addresses",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "addresses"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Get Address by ID",
-                    "request": {
-                        "method": "GET",
-                        "url": {
-                            "raw": "{{base_url}}/api/addresses/1",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "addresses",
-                                "1"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Create Address",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"fullName\": \"John Doe\",\n  \"phone\": \"9876543210\",\n  \"addressLine1\": \"123 Main Street\",\n  \"addressLine2\": \"Apartment 4B\",\n  \"city\": \"Mumbai\",\n  \"state\": \"Maharashtra\",\n  \"postalCode\": \"400001\",\n  \"country\": \"India\",\n  \"type\": \"HOME\",\n  \"isDefault\": true\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/addresses",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "addresses"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Update Address",
-                    "request": {
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"fullName\": \"John Doe Updated\",\n  \"phone\": \"9876543210\",\n  \"addressLine1\": \"456 New Street\",\n  \"city\": \"Delhi\",\n  \"state\": \"Delhi\",\n  \"postalCode\": \"110001\",\n  \"country\": \"India\",\n  \"type\": \"WORK\",\n  \"isDefault\": false\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/addresses/1",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "addresses",
-                                "1"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Set Default Address",
-                    "request": {
-                        "method": "PATCH",
-                        "url": {
-                            "raw": "{{base_url}}/api/addresses/1/default",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "addresses",
-                                "1",
-                                "default"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Delete Address",
-                    "request": {
-                        "method": "DELETE",
-                        "url": {
-                            "raw": "{{base_url}}/api/addresses/1",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "addresses",
                                 "1"
                             ]
                         }
@@ -734,7 +474,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"productId\": 1,\n  \"quantity\": 2\n}"
+                            "raw": "{\n  \"productId\": 1,\n  \"quantity\": 1\n}"
                         },
                         "url": {
                             "raw": "{{base_url}}/api/cart/items",
@@ -754,7 +494,7 @@
                     "request": {
                         "method": "PUT",
                         "url": {
-                            "raw": "{{base_url}}/api/cart/items/1?quantity=5",
+                            "raw": "{{base_url}}/api/cart/items/1?quantity=2",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -767,7 +507,7 @@
                             "query": [
                                 {
                                     "key": "quantity",
-                                    "value": "5"
+                                    "value": "2"
                                 }
                             ]
                         }
@@ -817,23 +557,39 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{base_url}}/api/orders?page=0&size=10",
+                            "raw": "{{base_url}}/api/orders",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
                                 "api",
                                 "orders"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Order (Checkout)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"shippingAddressId\": 1,\n  \"notes\": \"Leave at door\",\n  \"paymentMethod\": \"CREDIT_CARD\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/orders",
+                            "host": [
+                                "{{base_url}}"
                             ],
-                            "query": [
-                                {
-                                    "key": "page",
-                                    "value": "0"
-                                },
-                                {
-                                    "key": "size",
-                                    "value": "10"
-                                }
+                            "path": [
+                                "api",
+                                "orders"
                             ]
                         }
                     }
@@ -856,25 +612,52 @@
                     }
                 },
                 {
-                    "name": "Get Order by Number",
+                    "name": "Update Order Status (Admin)",
                     "request": {
-                        "method": "GET",
+                        "method": "PATCH",
                         "url": {
-                            "raw": "{{base_url}}/api/orders/number/ORD-1234567890",
+                            "raw": "{{base_url}}/api/orders/1/status?status=SHIPPED",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
                                 "api",
                                 "orders",
-                                "number",
-                                "ORD-1234567890"
+                                "1",
+                                "status"
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "SHIPPED"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Addresses",
+            "item": [
+                {
+                    "name": "Get User Addresses",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/addresses",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "addresses"
                             ]
                         }
                     }
                 },
                 {
-                    "name": "Create Order (Checkout)",
+                    "name": "Create Address",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -885,34 +668,16 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"shippingAddressId\": 1,\n  \"notes\": \"Please deliver between 10am-6pm\",\n  \"paymentMethod\": \"COD\"\n}"
+                            "raw": "{\n  \"fullName\": \"John Doe\",\n  \"phone\": \"1234567890\",\n  \"addressLine1\": \"123 Main St\",\n  \"city\": \"City\",\n  \"state\": \"State\",\n  \"postalCode\": \"123456\",\n  \"country\": \"Country\",\n  \"type\": \"HOME\",\n  \"isDefault\": true\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/api/orders",
+                            "raw": "{{base_url}}/api/addresses",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
                                 "api",
-                                "orders"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Cancel Order",
-                    "request": {
-                        "method": "PATCH",
-                        "url": {
-                            "raw": "{{base_url}}/api/orders/1/cancel",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "orders",
-                                "1",
-                                "cancel"
+                                "addresses"
                             ]
                         }
                     }

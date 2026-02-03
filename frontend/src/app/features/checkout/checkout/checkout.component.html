@@ -1,0 +1,63 @@
+<div class="checkout-container">
+    <h1>Checkout</h1>
+
+    <div class="checkout-layout">
+        <!-- Address Section -->
+        <section class="address-section">
+            <h2>Shipping Address</h2>
+
+            @if (loading()) {
+            <div class="spinner"></div>
+            } @else {
+            <div class="address-list">
+                @for (address of addresses(); track address.id) {
+                <div class="address-card" [class.selected]="selectedAddressId() === address.id"
+                    (click)="selectAddress(address.id)">
+                    <div class="card-header">
+                        <strong>{{ address.fullName }}</strong>
+                        <span class="phone">{{ address.phone }}</span>
+                    </div>
+                    <p>{{ address.addressLine1 }}</p>
+                    @if (address.addressLine2) { <p>{{ address.addressLine2 }}</p> }
+                    <p>{{ address.city }}, {{ address.state }} {{ address.postalCode }}</p>
+                    <p>{{ address.country }}</p>
+                    @if (address.isDefault) { <span class="default-badge">Default</span> }
+                </div>
+                } @empty {
+                <p>No addresses found. Please add one.</p>
+                }
+            </div>
+
+            <button class="add-address-btn" (click)="toggleAddressForm()">
+                {{ showAddressForm() ? 'Cancel' : '+ Add New Address' }}
+            </button>
+
+            @if (showAddressForm()) {
+            <form [formGroup]="addressForm" (ngSubmit)="createNewAddress()" class="new-address-form">
+                <input formControlName="fullName" placeholder="Full Name" />
+                <input formControlName="phone" placeholder="Phone Number" />
+                <input formControlName="addressLine1" placeholder="Address Line 1" />
+                <input formControlName="city" placeholder="City" />
+                <input formControlName="state" placeholder="State" />
+                <input formControlName="postalCode" placeholder="Postal Code" />
+                <button type="submit" [disabled]="addressForm.invalid || loading()">Save Address</button>
+            </form>
+            }
+            }
+        </section>
+
+        <!-- Order Summary & Action -->
+        <aside class="order-summary">
+            <h3>Order Summary</h3>
+            <p>Total Items: {{ cartService.cartItemCount() }}</p>
+            <div class="total-row">
+                <span>Total:</span>
+                <span class="price">{{ cartService.cartTotal() | currency }}</span>
+            </div>
+
+            <button class="place-order-btn" (click)="placeOrder()" [disabled]="placingOrder() || !selectedAddressId()">
+                {{ placingOrder() ? 'Placing Order...' : 'Place Order' }}
+            </button>
+        </aside>
+    </div>
+</div>
