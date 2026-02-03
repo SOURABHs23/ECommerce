@@ -1,0 +1,86 @@
+<div class="product-detail-container">
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+    </div>
+    } @else if (product()) {
+    <div class="product-detail">
+        <div class="product-gallery">
+            <div class="main-image">
+                @if (product()!.images && product()!.images.length > 0) {
+                <img [src]="selectedImage()" [alt]="product()!.name" />
+                } @else {
+                <div class="no-image">📦</div>
+                }
+            </div>
+            @if (product()!.images && product()!.images.length > 1) {
+            <div class="thumbnail-list">
+                @for (image of product()!.images; track $index) {
+                <button class="thumbnail" [class.active]="selectedImage() === image" (click)="selectImage(image)">
+                    <img [src]="image" [alt]="product()!.name" />
+                </button>
+                }
+            </div>
+            }
+        </div>
+
+        <div class="product-info">
+            @if (product()!.featured) {
+            <span class="featured-badge">⭐ Featured</span>
+            }
+
+            <p class="product-category">{{ product()!.categoryName || 'Uncategorized' }}</p>
+            <h1 class="product-name">{{ product()!.name }}</h1>
+
+            @if (product()!.brand) {
+            <p class="product-brand">by {{ product()!.brand }}</p>
+            }
+
+            <div class="product-price">
+                <span class="price">{{ product()!.price | currency }}</span>
+                @if (product()!.inStock) {
+                <span class="stock-badge in-stock">✓ In Stock</span>
+                } @else {
+                <span class="stock-badge out-of-stock">Out of Stock</span>
+                }
+            </div>
+
+            <div class="product-description">
+                <h3>Description</h3>
+                <p>{{ product()!.description || 'No description available.' }}</p>
+            </div>
+
+            <div class="product-meta">
+                @if (product()!.sku) {
+                <p><strong>SKU:</strong> {{ product()!.sku }}</p>
+                }
+                <p><strong>Available:</strong> {{ product()!.stock }} units</p>
+            </div>
+
+            <div class="quantity-section">
+                <label>Quantity:</label>
+                <div class="quantity-controls">
+                    <button (click)="decreaseQuantity()" [disabled]="quantity() <= 1">-</button>
+                    <span>{{ quantity() }}</span>
+                    <button (click)="increaseQuantity()" [disabled]="quantity() >= product()!.stock">+</button>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="add-to-cart-btn" (click)="addToCart()"
+                    [disabled]="!product()!.inStock || addingToCart()">
+                    {{ addingToCart() ? 'Adding...' : 'Add to Cart' }}
+                </button>
+                <button class="buy-now-btn" (click)="buyNow()" [disabled]="!product()!.inStock">
+                    Buy Now
+                </button>
+            </div>
+        </div>
+    </div>
+    } @else {
+    <div class="not-found">
+        <h2>Product not found</h2>
+        <p>The product you're looking for doesn't exist.</p>
+    </div>
+    }
+</div>

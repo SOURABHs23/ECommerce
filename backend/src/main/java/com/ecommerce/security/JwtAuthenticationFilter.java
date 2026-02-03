@@ -2,6 +2,8 @@ package com.ecommerce.security;
 
 import com.ecommerce.entity.User;
 import com.ecommerce.repository.UserRepository;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import java.util.List;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,8 +49,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (userOpt.isPresent()) {
                     User user = userOpt.get();
                     if (jwt.equals(user.getSessionToken())) {
+                        List<SimpleGrantedAuthority> authorities = java.util.Collections
+                                .singletonList(new SimpleGrantedAuthority(user.getRole()));
                         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                user, null, new ArrayList<>());
+                                user, null, authorities);
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                         SecurityContextHolder.getContext().setAuthentication(authentication);

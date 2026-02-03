@@ -1,0 +1,47 @@
+<div class="product-form-container">
+    <h2>Add New Product</h2>
+    
+    @if (errorMessage) {
+        <div class="error-alert">{{ errorMessage }}</div>
+    }
+
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <label for="name">Product Name</label>
+            <input id="name" type="text" formControlName="name" placeholder="Enter product name">
+        </div>
+
+        <div class="form-group">
+            <label for="sku">SKU</label>
+            <input id="sku" type="text" formControlName="sku" placeholder="Unique Product Code">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" formControlName="description" rows="4"></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input id="price" type="number" formControlName="price">
+            </div>
+
+            <div class="form-group">
+                <label for="stockQuantity">Stock</label>
+                <input id="stockQuantity" type="number" formControlName="stockQuantity">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="imageUrl">Image URL</label>
+            <input id="imageUrl" type="text" formControlName="imageUrl" placeholder="http://example.com/image.jpg">
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" [disabled]="loading || productForm.invalid">
+                {{ loading ? 'Saving...' : 'Create Product' }}
+            </button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,154 @@
+.header {
+    background: rgba(18, 18, 28, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+
+    .logo-icon {
+        font-size: 1.5rem;
+    }
+
+    .logo-text {
+        font-size: 1.25rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+
+    a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+
+        &:hover,
+        &.active {
+            color: white;
+        }
+
+        &.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+    }
+}
+
+.admin-link {
+    color: #ef4444 !important;
+    /* Red color to distinguish admin actions */
+    font-weight: 600 !important;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.cart-link {
+    position: relative;
+    text-decoration: none;
+    font-size: 1.25rem;
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    .cart-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #ef4444;
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 700;
+        min-width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        border: 2px solid #12121c;
+    }
+}
+
+.nav-btn {
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+        color: white;
+    }
+
+    &.primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        color: white;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+    }
+}
+
+.logout-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+
+    &:hover {
+        color: #ef4444;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 1rem;
+    }
+
+    .nav-links {
+        display: none; // Ideally add a hamburger menu for mobile
+    }
+}

@@ -1,0 +1,33 @@
+<header class="header">
+    <nav class="nav-container">
+        <a routerLink="/" class="logo">
+            <span class="logo-icon">🛒</span>
+            <span class="logo-text">ShopHub</span>
+        </a>
+
+        <div class="nav-links">
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+            <a routerLink="/products" routerLinkActive="active">Products</a>
+            @if (authService.isAdmin()) {
+            <a routerLink="/admin/products/new" routerLinkActive="active" class="admin-link">Add Product</a>
+            }
+        </div>
+
+        <div class="nav-actions">
+            <a routerLink="/cart" class="cart-link">
+                <span class="cart-icon">🛒</span>
+                @if (cartService.cartItemCount() > 0) {
+                <span class="cart-badge">{{ cartService.cartItemCount() }}</span>
+                }
+            </a>
+
+            @if (authService.isAuthenticated()) {
+            <a routerLink="/orders" class="nav-btn">Orders</a>
+            <button (click)="authService.logout()" class="nav-btn logout-btn">Logout</button>
+            } @else {
+            <a routerLink="/login" class="nav-btn">Login</a>
+            <a routerLink="/register" class="nav-btn primary">Sign Up</a>
+            }
+        </div>
+    </nav>
+</header>
