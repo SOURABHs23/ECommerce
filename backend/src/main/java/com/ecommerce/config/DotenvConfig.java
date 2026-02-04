@@ -23,19 +23,6 @@ public class DotenvConfig implements ApplicationContextInitializer<ConfigurableA
 
     private static final Logger logger = LoggerFactory.getLogger(DotenvConfig.class);
 
-    // This static block is not part of the original request but was in the provided
-    // snippet.
-    // It suggests a different way of loading env vars, potentially outside of the
-    // Spring context initialization.
-    // For now, keeping the ApplicationContextInitializer approach as it's the
-    // original structure.
-    // If the intent was to move to a static load, the initialize method would
-    // become redundant or need refactoring.
-    // static {
-    // loadEnv(); // This would require loadEnv() to be a static method that sets
-    // system properties.
-    // }
-
     @Override
     public void initialize(ConfigurableApplicationContext ctx) {
         Map<String, Object> envVars = loadEnvFile();
