@@ -7,37 +7,64 @@
     <div class="products-layout">
         <!-- Sidebar Filters -->
         <aside class="filters-sidebar">
-            <div class="filter-section">
-                <h3>Search</h3>
-                <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="searchProducts()"
-                    placeholder="Search products..." class="search-input" />
-            </div>
+            <mat-card class="filter-card">
+                <mat-card-header>
+                    <mat-card-title>Filters</mat-card-title>
+                </mat-card-header>
+                <mat-card-content class="filter-content">
 
-            <div class="filter-section">
-                <h3>Categories</h3>
-                <div class="category-list">
-                    <button class="category-btn" [class.active]="!selectedCategory" (click)="selectCategory(null)">
-                        All Products
-                    </button>
-                    @for (category of categories(); track category.id) {
-                    <button class="category-btn" [class.active]="selectedCategory === category.id"
-                        (click)="selectCategory(category.id)">
-                        {{ category.name }}
-                        <span class="count">{{ category.productCount }}</span>
-                    </button>
-                    }
-                </div>
-            </div>
+                    <!-- Search -->
+                    <div class="filter-section">
+                        <h3>Search</h3>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Search products</mat-label>
+                            <input matInput type="text" [(ngModel)]="searchQuery" (keyup.enter)="searchProducts()">
+                            <mat-icon matSuffix (click)="searchProducts()" style="cursor: pointer">search</mat-icon>
+                        </mat-form-field>
+                    </div>
 
-            <div class="filter-section">
-                <h3>Price Range</h3>
-                <div class="price-inputs">
-                    <input type="number" [(ngModel)]="minPrice" placeholder="Min" class="price-input" />
-                    <span>-</span>
-                    <input type="number" [(ngModel)]="maxPrice" placeholder="Max" class="price-input" />
-                </div>
-                <button class="apply-filter-btn" (click)="applyFilters()">Apply Filters</button>
-            </div>
+                    <mat-divider></mat-divider>
+
+                    <!-- Categories -->
+                    <div class="filter-section">
+                        <h3>Categories</h3>
+                        <mat-chip-listbox class="category-chips" aria-label="Category selection">
+                            <mat-chip-option [selected]="!selectedCategory" (click)="selectCategory(null)">
+                                All Products
+                            </mat-chip-option>
+                            @for (category of categories(); track category.id) {
+                            <mat-chip-option [selected]="selectedCategory === category.id"
+                                (click)="selectCategory(category.id)">
+                                {{ category.name }}
+                            </mat-chip-option>
+                            }
+                        </mat-chip-listbox>
+                    </div>
+
+                    <mat-divider></mat-divider>
+
+                    <!-- Price Range -->
+                    <div class="filter-section">
+                        <h3>Price Range</h3>
+                        <div class="price-inputs">
+                            <mat-form-field appearance="outline" class="price-field">
+                                <mat-label>Min</mat-label>
+                                <span matTextPrefix>₹&nbsp;</span>
+                                <input matInput type="number" [(ngModel)]="minPrice">
+                            </mat-form-field>
+                            <span class="range-separator">-</span>
+                            <mat-form-field appearance="outline" class="price-field">
+                                <mat-label>Max</mat-label>
+                                <span matTextPrefix>₹&nbsp;</span>
+                                <input matInput type="number" [(ngModel)]="maxPrice">
+                            </mat-form-field>
+                        </div>
+                        <button mat-raised-button color="primary" class="full-width" (click)="applyFilters()">
+                            Apply Filters
+                        </button>
+                    </div>
+                </mat-card-content>
+            </mat-card>
         </aside>
 
         <!-- Products Grid -->

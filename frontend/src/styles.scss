@@ -1,113 +1,132 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@use '@angular/material' as mat;
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+// Include the common styles for Angular Material. 
+@include mat.core();
 
+// Define your custom palettes using M2 namespaced functions for v18+
+// Primary: Deep Royal Blue (Trust, Professionalism)
+$shop-primary: mat.m2-define-palette(mat.$m2-indigo-palette, 700, 500, 900);
+
+// Accent: Amber/Gold (Action, Premium)
+$shop-accent: mat.m2-define-palette(mat.$m2-amber-palette, A200, A100, A400);
+
+// Warn: Standard Red
+$shop-warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+// Typography Config - Using Inter
+$shop-typography: mat.m2-define-typography-config($font-family: "'Inter', sans-serif"
+    );
+
+// Create the theme object.
+$shop-theme: mat.m2-define-light-theme((color: (primary: $shop-primary,
+                accent: $shop-accent,
+                warn: $shop-warn,
+            ),
+            typography: $shop-typography,
+            density: 0));
+
+// Include theme styles for core and each component used in your app.
+@include mat.all-component-themes($shop-theme);
+
+/* =========================================
+   Global Resets & Variables
+   ========================================= */
 :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --bg-dark: #0f0f14;
-    --bg-card: rgba(30, 30, 40, 0.6);
-    --text-primary: #ffffff;
-    --text-secondary: rgba(255, 255, 255, 0.7);
-    --text-muted: rgba(255, 255, 255, 0.5);
-    --border-color: rgba(255, 255, 255, 0.1);
-    --accent-purple: #667eea;
-    --accent-pink: #764ba2;
-    --success: #6cdf6c;
-    --error: #ff6b6b;
-    --warning: #ffa500;
+    --bg-body: #f8f9fa;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-html {
-    scroll-behavior: smooth;
+html,
+body {
+    height: 100%;
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg-dark);
+    margin: 0;
+    font-family: 'Inter', "Helvetica Neue", sans-serif;
+    background-color: var(--bg-body);
     color: var(--text-primary);
-    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Background gradient effect */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background:
-        radial-gradient(ellipse at 20% 0%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 100%, rgba(118, 75, 162, 0.15) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: -1;
-}
+/* =========================================
+   Component Overrides (Premium Polish)
+   ========================================= */
 
-a {
-    color: inherit;
-    text-decoration: none;
-}
+// 1. Buttons - Modern Shape & Shadow
+.mat-mdc-raised-button {
+    border-radius: 8px !important;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 
-button {
-    font-family: inherit;
-}
-
-img {
-    max-width: 100%;
-    display: block;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(102, 126, 234, 0.5);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(102, 126, 234, 0.7);
-}
-
-/* Selection */
-::selection {
-    background: rgba(102, 126, 234, 0.4);
-    color: white;
-}
-
-/* Focus styles */
-:focus-visible {
-    outline: 2px solid var(--accent-purple);
-    outline-offset: 2px;
-}
-
-/* Page transitions */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    &:not([disabled]):hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12) !important;
+        transition: all 0.2s ease;
     }
 }
 
-.main-content>* {
-    animation: fadeIn 0.3s ease-out;
+// 2. Cards - Lift Effect & Clean Borders
+.mat-mdc-card {
+    border-radius: 12px !important;
+    box-shadow: var(--card-shadow) !important;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+
+    /* Helper for hover effects if needed */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+// 3. Form Fields - Clean Outlines
+.mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+        background-color: white !important;
+    }
+}
+
+// 4. Table - Professional Data Grid
+.mat-mdc-table {
+    background: transparent !important;
+
+    .mat-mdc-header-cell {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .mat-mdc-cell {
+        font-size: 0.95rem;
+        color: var(--text-primary);
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .mat-mdc-row:hover {
+        background-color: rgba(0, 0, 0, 0.02) !important;
+    }
+}
+
+// 5. Chips - Modern Tags
+.mat-mdc-standard-chip {
+    border-radius: 6px !important;
+}
+
+/* =========================================
+   Utility Classes
+   ========================================= */
+.text-primary {
+    color: var(--text-primary);
+}
+
+.text-secondary {
+    color: var(--text-secondary);
+}
+
+/* Import Material Icons */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');

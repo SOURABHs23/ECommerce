@@ -4,10 +4,32 @@ import { ProductService, CartService, CategoryService } from '../../../core/serv
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card.component';
 import { Product, Category, PageResponse } from '../../../core/models';
 
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatListModule } from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatChipsModule } from '@angular/material/chips';
+
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [FormsModule, ProductCardComponent],
+  imports: [
+    FormsModule,
+    ProductCardComponent,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatListModule,
+    MatDividerModule,
+    MatChipsModule
+  ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })

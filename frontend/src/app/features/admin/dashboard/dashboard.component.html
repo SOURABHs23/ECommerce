@@ -74,8 +74,8 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Product </th>
           <td mat-cell *matCellDef="let product">
             <div class="product-info-cell">
-              <img [src]="product.images?.[0] || 'assets/placeholder.png'" [alt]="product.name"
-                class="product-thumbnail" onerror="this.src='https://placehold.co/50x50?text=No+Image'">
+              <img [src]="product.images?.[0] || 'https://placehold.co/50x50?text=No+Image'" [alt]="product.name"
+                class="product-thumbnail" onerror="this.onerror=null;this.src='https://placehold.co/50x50?text=Error'">
               <div class="product-text">
                 <div class="product-name">{{ product.name }}</div>
                 <div class="product-category text-secondary">{{ product.categoryName || 'Uncategorized' }}</div>

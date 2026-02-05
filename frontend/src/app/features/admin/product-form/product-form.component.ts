@@ -1,9 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ProductService } from '../../../core/services/product.service';
-import { ProductRequest } from '../../../core/models';
+import { ProductService, CategoryService } from '../../../core/services';
+import { ProductRequest, Category } from '../../../core/models';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,6 +31,7 @@ import { MatSelectModule } from '@angular/material/select';
 export class ProductFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private productService = inject(ProductService);
+  private categoryService = inject(CategoryService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -39,6 +40,7 @@ export class ProductFormComponent implements OnInit {
   productId: number | null = null;
   loading = false;
   errorMessage = '';
+  categories = signal<Category[]>([]);
 
   constructor() {
     this.productForm = this.fb.group({
@@ -47,12 +49,13 @@ export class ProductFormComponent implements OnInit {
       description: ['', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
       stockQuantity: [0, [Validators.required, Validators.min(0)]],
-      categoryId: [1, Validators.required], // Default to 1 for now
+      categoryId: [null, Validators.required],
       imageUrl: ['']
     });
   }
 
   ngOnInit(): void {
+    this.loadCategories();
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEditMode = true;
@@ -61,17 +64,24 @@ export class ProductFormComponent implements OnInit {
     }
   }
 
+  loadCategories(): void {
+    this.categoryService.getCategories().subscribe({
+      next: (categories) => this.categories.set(categories),
+      error: (err) => console.error('Failed to load categories', err)
+    });
+  }
+
   loadProduct(id: number): void {
     this.loading = true;
     this.productService.getProductById(id).subscribe({
-      next: (product: any) => { // Using any temporarily or Product if import available, but fixing the strict error
+      next: (product: any) => {
         this.productForm.patchValue({
           name: product.name,
           sku: product.sku,
           description: product.description,
           price: product.price,
           stockQuantity: product.stock,
-          categoryId: product.categoryId || 1, // Changed from product.category?.id to match flat structure if needed
+          categoryId: product.categoryId,
           imageUrl: product.images?.[0] || ''
         });
         this.loading = false;
@@ -90,6 +100,8 @@ export class ProductFormComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
 
+    const images = this.productForm.value.imageUrl ? [this.productForm.value.imageUrl] : [];
+
     const productData: ProductRequest = {
       name: this.productForm.value.name,
       description: this.productForm.value.description,
@@ -97,7 +109,8 @@ export class ProductFormComponent implements OnInit {
       price: this.productForm.value.price,
       stock: this.productForm.value.stockQuantity,
       categoryId: this.productForm.value.categoryId,
-      images: this.productForm.value.imageUrl ? [this.productForm.value.imageUrl] : []
+      images: images,
+      imageUrls: images // Ensure backward compatibility with backend
     };
 
     const request = this.isEditMode && this.productId

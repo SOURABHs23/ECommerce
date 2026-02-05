@@ -1,7 +1,7 @@
 .products-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 6rem 2rem 4rem;
+    padding: 2rem;
 }
 
 .products-header {
@@ -10,15 +10,13 @@
 
     h1 {
         font-size: 2.5rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        font-weight: 700;
         margin-bottom: 0.5rem;
+        color: var(--text-primary);
     }
 
     p {
-        color: rgba(255, 255, 255, 0.6);
+        color: var(--text-secondary);
         font-size: 1.1rem;
     }
 }
@@ -27,82 +25,48 @@
     display: grid;
     grid-template-columns: 280px 1fr;
     gap: 2rem;
+    align-items: start;
 }
 
+// Sidebar
 .filters-sidebar {
-    background: rgba(30, 30, 40, 0.6);
-    border-radius: 16px;
-    padding: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    height: fit-content;
     position: sticky;
-    top: 6rem;
+    top: 2rem;
+}
+
+.filter-card {
+    padding: 0; // Let header/content handle padding
+}
+
+.filter-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem;
 }
 
 .filter-section {
-    margin-bottom: 2rem;
-
-    &:last-child {
-        margin-bottom: 0;
-    }
-
     h3 {
-        color: white;
-        font-size: 1rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-secondary);
         margin-bottom: 1rem;
-        font-weight: 600;
+        margin-top: 0;
     }
 }
 
-.search-input {
+.full-width {
     width: 100%;
-    padding: 0.8rem 1rem;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(20, 20, 30, 0.8);
-    color: white;
-    font-size: 0.9rem;
-    box-sizing: border-box;
-
-    &:focus {
-        outline: none;
-        border-color: #667eea;
-    }
 }
 
-.category-list {
+.category-chips {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-}
 
-.category-btn {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    border-radius: 10px;
-    border: 1px solid transparent;
-    background: rgba(20, 20, 30, 0.6);
-    color: rgba(255, 255, 255, 0.7);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: left;
-
-    &:hover {
-        background: rgba(102, 126, 234, 0.1);
-        border-color: rgba(102, 126, 234, 0.3);
-    }
-
-    &.active {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-
-    .count {
-        font-size: 0.75rem;
-        opacity: 0.7;
+    mat-chip-option {
+        width: 100%;
     }
 }
 
@@ -111,66 +75,51 @@
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 1rem;
-
-    span {
-        color: rgba(255, 255, 255, 0.5);
-    }
 }
 
-.price-input {
+.price-field {
+    width: 100px;
     flex: 1;
-    min-width: 60px;
-    /* Ensure enough space for numbers */
-    padding: 0.7rem;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(20, 20, 30, 0.8);
-    color: white;
-    font-size: 0.9rem;
 }
 
-.apply-filter-btn {
-    width: 100%;
-    padding: 0.8rem;
-    border-radius: 10px;
-    border: none;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.range-separator {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
 
-    &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    }
+// Main Content
+.products-main {
+    min-height: 500px;
 }
 
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
-.loading-state,
-.empty-state {
+.load-more {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+}
+
+// Empty & Loading States
+.empty-state,
+.loading-state {
     text-align: center;
     padding: 4rem 2rem;
-}
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    border-top-color: #667eea;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 1rem;
-}
+    h2 {
+        margin-top: 1rem;
+        color: var(--text-primary);
+    }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
+    p {
+        color: var(--text-secondary);
     }
 }
 
@@ -180,43 +129,14 @@
     margin-bottom: 1rem;
 }
 
-.empty-state {
-    h2 {
-        color: white;
-        margin-bottom: 0.5rem;
-    }
-
-    p {
-        color: rgba(255, 255, 255, 0.5);
-    }
-}
-
-.load-more {
-    text-align: center;
-    margin-top: 2rem;
-}
-
-.load-more-btn {
-    padding: 1rem 3rem;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: transparent;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-        background: rgba(255, 255, 255, 0.1);
-    }
-}
-
-@media (max-width: 768px) {
+// Responsive
+@media (max-width: 900px) {
     .products-layout {
         grid-template-columns: 1fr;
     }
 
     .filters-sidebar {
         position: static;
+        margin-bottom: 2rem;
     }
 }

@@ -1,30 +1,41 @@
-<article class="product-card" (click)="onCardClick()">
-    <div class="product-image">
+<mat-card class="product-card" (click)="onCardClick()">
+    <div class="product-image-container">
         @if (product.images && product.images.length > 0) {
-        <img [src]="product.images[0]" [alt]="product.name" />
+        <img mat-card-image [src]="product.images[0]" [alt]="product.name" class="product-image" />
         } @else {
-        <div class="no-image">📦</div>
+        <div class="no-image">
+            <mat-icon>inventory_2</mat-icon>
+        </div>
         }
-        @if (product.featured) {
-        <span class="featured-badge">Featured</span>
-        }
-        @if (!product.inStock) {
-        <span class="out-of-stock-badge">Out of Stock</span>
-        }
+
+        <div class="badges">
+            @if (product.featured) {
+            <mat-chip-option color="accent" selected>Featured</mat-chip-option>
+            }
+            @if (!product.inStock) {
+            <mat-chip-option color="warn" selected>Out of Stock</mat-chip-option>
+            }
+        </div>
     </div>
 
-    <div class="product-info">
-        <p class="product-category">{{ product.categoryName || 'Uncategorized' }}</p>
+    <mat-card-content class="product-content">
+        <div class="product-header">
+            <p class="product-category text-secondary">{{ product.categoryName || 'Uncategorized' }}</p>
+            @if (product.brand) {
+            <span class="product-brand text-secondary">by {{ product.brand }}</span>
+            }
+        </div>
         <h3 class="product-name">{{ product.name }}</h3>
-        @if (product.brand) {
-        <p class="product-brand">{{ product.brand }}</p>
-        }
 
         <div class="product-footer">
             <span class="product-price">{{ product.price | currency:'INR' }}</span>
-            <button class="add-to-cart-btn" (click)="onAddToCart($event)" [disabled]="!product.inStock">
-                {{ product.inStock ? 'Add to Cart' : 'Sold Out' }}
-            </button>
         </div>
-    </div>
-</article>
+    </mat-card-content>
+
+    <mat-card-actions align="end" (click)="$event.stopPropagation()">
+        <button mat-raised-button color="primary" (click)="onAddToCart($event)" [disabled]="!product.inStock">
+            <mat-icon>add_shopping_cart</mat-icon>
+            {{ product.inStock ? 'Add' : 'Sold Out' }}
+        </button>
+    </mat-card-actions>
+</mat-card>
