@@ -1,40 +1,44 @@
 <div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <h1>Welcome Back</h1>
-            <p>Sign in to continue shopping</p>
-        </div>
+    <mat-card class="auth-card">
+        <mat-card-header>
+            <mat-card-title>Welcome Back</mat-card-title>
+            <mat-card-subtitle>Sign in to continue shopping</mat-card-subtitle>
+        </mat-card-header>
 
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
-            @if (errorMessage) {
-            <div class="error-alert">{{ errorMessage }}</div>
-            }
-
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input id="email" type="email" formControlName="email" placeholder="Enter your email"
-                    [class.error]="isFieldInvalid('email')" />
-                @if (isFieldInvalid('email')) {
-                <span class="field-error">Please enter a valid email</span>
+        <mat-card-content>
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+                @if (errorMessage) {
+                <div class="error-banner">
+                    <mat-icon>error</mat-icon>
+                    <span>{{ errorMessage }}</span>
+                </div>
                 }
-            </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input id="password" type="password" formControlName="password" placeholder="Enter your password"
-                    [class.error]="isFieldInvalid('password')" />
-                @if (isFieldInvalid('password')) {
-                <span class="field-error">Password is required</span>
-                }
-            </div>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Email</mat-label>
+                    <input matInput type="email" formControlName="email" placeholder="Enter your email">
+                    <mat-icon matSuffix>email</mat-icon>
+                    <mat-error *ngIf="isFieldInvalid('email')">Please enter a valid email</mat-error>
+                </mat-form-field>
 
-            <button type="submit" class="submit-btn" [disabled]="loading">
-                {{ loading ? 'Signing in...' : 'Sign In' }}
-            </button>
-        </form>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Password</mat-label>
+                    <input matInput type="password" formControlName="password" placeholder="Enter your password">
+                    <mat-icon matSuffix>lock</mat-icon>
+                    <mat-error *ngIf="isFieldInvalid('password')">Password is required</mat-error>
+                </mat-form-field>
 
-        <div class="auth-footer">
-            <p>Don't have an account? <a routerLink="/register">Sign up</a></p>
-        </div>
-    </div>
+                <div class="auth-actions">
+                    <button mat-raised-button color="primary" type="submit" [disabled]="loading || loginForm.invalid"
+                        class="full-width-btn">
+                        {{ loading ? 'Signing in...' : 'Sign In' }}
+                    </button>
+                </div>
+            </form>
+        </mat-card-content>
+
+        <mat-card-footer class="auth-footer">
+            <p>Don't have an account? <a routerLink="/register" class="link">Sign up</a></p>
+        </mat-card-footer>
+    </mat-card>
 </div>

@@ -5,12 +5,34 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AddressService, OrderService, CartService } from '../../../core/services';
 import { Address, OrderRequest } from '../../../core/models';
 
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatRadioModule,
+    MatDividerModule,
+    MatProgressSpinnerModule,
+    MatChipsModule
+  ],
   templateUrl: './checkout.component.html',
-  styleUrl: './checkout.component.css'
+  styleUrl: './checkout.component.scss'
 })
 export class CheckoutComponent implements OnInit {
   private addressService = inject(AddressService);

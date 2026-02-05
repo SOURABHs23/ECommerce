@@ -1,63 +1,144 @@
 <div class="checkout-container">
-    <h1>Checkout</h1>
+    <div class="checkout-header">
+        <h1>Checkout</h1>
+    </div>
 
     <div class="checkout-layout">
         <!-- Address Section -->
-        <section class="address-section">
-            <h2>Shipping Address</h2>
-
-            @if (loading()) {
-            <div class="spinner"></div>
-            } @else {
-            <div class="address-list">
-                @for (address of addresses(); track address.id) {
-                <div class="address-card" [class.selected]="selectedAddressId() === address.id"
-                    (click)="selectAddress(address.id)">
-                    <div class="card-header">
-                        <strong>{{ address.fullName }}</strong>
-                        <span class="phone">{{ address.phone }}</span>
+        <div class="address-section">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>Shipping Address</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    @if (loading()) {
+                    <div class="spinner-container">
+                        <mat-spinner diameter="40"></mat-spinner>
                     </div>
-                    <p>{{ address.addressLine1 }}</p>
-                    @if (address.addressLine2) { <p>{{ address.addressLine2 }}</p> }
-                    <p>{{ address.city }}, {{ address.state }} {{ address.postalCode }}</p>
-                    <p>{{ address.country }}</p>
-                    @if (address.isDefault) { <span class="default-badge">Default</span> }
-                </div>
-                } @empty {
-                <p>No addresses found. Please add one.</p>
-                }
-            </div>
+                    } @else {
 
-            <button class="add-address-btn" (click)="toggleAddressForm()">
-                {{ showAddressForm() ? 'Cancel' : '+ Add New Address' }}
-            </button>
+                    @if (!showAddressForm()) {
+                    <div class="address-list">
+                        @for (address of addresses(); track address.id) {
+                        <div class="address-item" [class.selected]="selectedAddressId() === address.id"
+                            (click)="selectAddress(address.id)">
+                            <div class="address-radio">
+                                <mat-radio-button [checked]="selectedAddressId() === address.id"
+                                    (change)="selectAddress(address.id)">
+                                </mat-radio-button>
+                            </div>
+                            <div class="address-details">
+                                <div class="name-row">
+                                    <strong>{{ address.fullName }}</strong>
+                                    <span class="phone">{{ address.phone }}</span>
+                                    @if (address.isDefault) {
+                                    <mat-chip-option color="accent" selected>Default</mat-chip-option>
+                                    }
+                                </div>
+                                <p>{{ address.addressLine1 }}</p>
+                                @if (address.addressLine2) { <p>{{ address.addressLine2 }}</p> }
+                                <p>{{ address.city }}, {{ address.state }} {{ address.postalCode }}</p>
+                                <p class="country">{{ address.country }}</p>
+                            </div>
+                        </div>
+                        } @empty {
+                        <div class="empty-address">
+                            <mat-icon>location_off</mat-icon>
+                            <p>No addresses found. Please add one below.</p>
+                        </div>
+                        }
+                    </div>
 
-            @if (showAddressForm()) {
-            <form [formGroup]="addressForm" (ngSubmit)="createNewAddress()" class="new-address-form">
-                <input formControlName="fullName" placeholder="Full Name" />
-                <input formControlName="phone" placeholder="Phone Number" />
-                <input formControlName="addressLine1" placeholder="Address Line 1" />
-                <input formControlName="city" placeholder="City" />
-                <input formControlName="state" placeholder="State" />
-                <input formControlName="postalCode" placeholder="Postal Code" />
-                <button type="submit" [disabled]="addressForm.invalid || loading()">Save Address</button>
-            </form>
-            }
-            }
-        </section>
+                    <button mat-stroked-button color="primary" class="add-btn" (click)="toggleAddressForm()">
+                        <mat-icon>add</mat-icon> Add New Address
+                    </button>
+                    }
 
-        <!-- Order Summary & Action -->
+                    @if (showAddressForm()) {
+                    <form [formGroup]="addressForm" (ngSubmit)="createNewAddress()" class="address-form">
+                        <h3>Add New Address</h3>
+
+                        <div class="form-row">
+                            <mat-form-field appearance="outline" class="half-width">
+                                <mat-label>Full Name</mat-label>
+                                <input matInput formControlName="fullName" placeholder="John Doe">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="half-width">
+                                <mat-label>Phone</mat-label>
+                                <input matInput formControlName="phone" placeholder="+91 9876543210">
+                            </mat-form-field>
+                        </div>
+
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Address Line 1</mat-label>
+                            <input matInput formControlName="addressLine1" placeholder="Street address, P.O. box">
+                        </mat-form-field>
+
+                        <div class="form-row">
+                            <mat-form-field appearance="outline" class="third-width">
+                                <mat-label>City</mat-label>
+                                <input matInput formControlName="city">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="third-width">
+                                <mat-label>State</mat-label>
+                                <input matInput formControlName="state">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="third-width">
+                                <mat-label>Postal Code</mat-label>
+                                <input matInput formControlName="postalCode">
+                            </mat-form-field>
+                        </div>
+
+                        <div class="form-actions">
+                            <button mat-button type="button" (click)="toggleAddressForm()">Cancel</button>
+                            <button mat-raised-button color="primary" type="submit"
+                                [disabled]="addressForm.invalid || loading()">
+                                Save Address
+                            </button>
+                        </div>
+                    </form>
+                    }
+                    }
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <!-- Order Summary -->
         <aside class="order-summary">
-            <h3>Order Summary</h3>
-            <p>Total Items: {{ cartService.cartItemCount() }}</p>
-            <div class="total-row">
-                <span>Total:</span>
-                <span class="price">{{ cartService.cartTotal() | currency:'INR' }}</span>
-            </div>
-
-            <button class="place-order-btn" (click)="placeOrder()" [disabled]="placingOrder() || !selectedAddressId()">
-                {{ placingOrder() ? 'Placing Order...' : 'Place Order' }}
-            </button>
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>Order Summary</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="summary-details">
+                        <div class="summary-row">
+                            <span>Total Items</span>
+                            <span>{{ cartService.cartItemCount() }}</span>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <div class="total-row">
+                            <span>Total</span>
+                            <span class="price">{{ cartService.cartTotal() | currency:'INR' }}</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-raised-button color="accent" class="place-order-btn" (click)="placeOrder()"
+                        [disabled]="placingOrder() || !selectedAddressId()">
+                        @if (placingOrder()) {
+                        <mat-spinner diameter="20" color="accent"></mat-spinner>
+                        } @else {
+                        Place Order
+                        }
+                    </button>
+                    @if (!selectedAddressId() && !loading()) {
+                    <mat-error class="text-center mt-2 d-block">Please select an address</mat-error>
+                    }
+                </mat-card-actions>
+            </mat-card>
         </aside>
     </div>
 </div>

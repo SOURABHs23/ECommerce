@@ -4,10 +4,24 @@ import { RouterLink, Router } from '@angular/router';
 import { CartService, AuthService } from '../../core/services';
 import { Cart, CartItem } from '../../core/models';
 
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe],
+  imports: [
+    RouterLink,
+    CurrencyPipe,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDividerModule,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss'
 })

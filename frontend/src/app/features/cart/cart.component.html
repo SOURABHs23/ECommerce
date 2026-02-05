@@ -2,92 +2,114 @@
     <div class="cart-header">
         <h1>Shopping Cart</h1>
         @if (cartService.cart()?.items?.length) {
-        <p>{{ cartService.cartItemCount() }} items in your cart</p>
+        <p>{{ cartService.cartItemCount() }} items</p>
         }
     </div>
 
     @if (!authService.isAuthenticated()) {
-    <div class="auth-prompt">
-        <span class="auth-icon">🔐</span>
-        <h2>Please sign in to view your cart</h2>
-        <a routerLink="/login" [queryParams]="{returnUrl: '/cart'}" class="signin-btn">Sign In</a>
-    </div>
+    <mat-card class="state-card">
+        <mat-card-content class="text-center">
+            <mat-icon class="large-icon">lock</mat-icon>
+            <h2>Please sign in to view your cart</h2>
+            <button mat-raised-button color="primary" routerLink="/login" [queryParams]="{returnUrl: '/cart'}">
+                Sign In
+            </button>
+        </mat-card-content>
+    </mat-card>
     } @else if (loading) {
     <div class="loading-state">
-        <div class="spinner"></div>
+        <mat-spinner diameter="50"></mat-spinner>
     </div>
     } @else if (!cartService.cart()?.items?.length) {
-    <div class="empty-cart">
-        <span class="empty-icon">🛒</span>
-        <h2>Your cart is empty</h2>
-        <p>Looks like you haven't added any items yet</p>
-        <a routerLink="/products" class="browse-btn">Browse Products</a>
-    </div>
+    <mat-card class="state-card">
+        <mat-card-content class="text-center">
+            <mat-icon class="large-icon">shopping_cart</mat-icon>
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added any items yet</p>
+            <button mat-stroked-button color="primary" routerLink="/products">Browse Products</button>
+        </mat-card-content>
+    </mat-card>
     } @else {
     <div class="cart-layout">
         <div class="cart-items">
             @for (item of cartService.cart()!.items; track item.id) {
-            <article class="cart-item">
-                <div class="item-image">
-                    @if (item.productImage) {
-                    <img [src]="item.productImage" [alt]="item.productName" />
-                    } @else {
-                    <div class="no-image">📦</div>
-                    }
+            <mat-card class="cart-item-card">
+                <div class="cart-item-content">
+                    <!-- Image -->
+                    <div class="item-image-container">
+                        @if (item.productImage) {
+                        <img [src]="item.productImage" [alt]="item.productName" />
+                        } @else {
+                        <div class="no-image">
+                            <mat-icon>inventory_2</mat-icon>
+                        </div>
+                        }
+                    </div>
+
+                    <!-- Details -->
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3>{{ item.productName }}</h3>
+                            <button mat-icon-button color="warn" (click)="removeItem(item.id)" matTooltip="Remove">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+
+                        <div class="item-meta">
+                            <span class="price">{{ item.price | currency:'INR' }}</span>
+                            @if (!item.inStock) {
+                            <span class="stock-warning">Limited Stock</span>
+                            }
+                        </div>
+
+                        <div class="item-controls">
+                            <div class="quantity-control">
+                                <button mat-icon-button (click)="updateQuantity(item, item.quantity - 1)"
+                                    [disabled]="item.quantity <= 1">
+                                    <mat-icon>remove</mat-icon>
+                                </button>
+                                <span class="quantity-value">{{ item.quantity }}</span>
+                                <button mat-icon-button (click)="updateQuantity(item, item.quantity + 1)">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </div>
+                            <span class="subtotal">{{ item.subtotal | currency:'INR' }}</span>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="item-details">
-                    <h3>{{ item.productName }}</h3>
-                    <p class="item-price">{{ item.price | currency:'INR' }} each</p>
-
-                    @if (!item.inStock) {
-                    <span class="stock-warning">⚠️ Limited stock</span>
-                    }
-                </div>
-
-                <div class="item-quantity">
-                    <button (click)="updateQuantity(item, item.quantity - 1)" [disabled]="item.quantity <= 1">-</button>
-                    <span>{{ item.quantity }}</span>
-                    <button (click)="updateQuantity(item, item.quantity + 1)">+</button>
-                </div>
-
-                <div class="item-subtotal">
-                    <span class="subtotal-label">Subtotal</span>
-                    <span class="subtotal-price">{{ item.subtotal | currency:'INR' }}</span>
-                </div>
-
-                <button class="remove-btn" (click)="removeItem(item.id)">
-                    <span>×</span>
-                </button>
-            </article>
+            </mat-card>
             }
         </div>
 
         <aside class="cart-summary">
-            <h2>Order Summary</h2>
-
-            <div class="summary-row">
-                <span>Subtotal</span>
-                <span>{{ cartService.cartTotal() | currency }}</span>
-            </div>
-
-            <div class="summary-row">
-                <span>Shipping</span>
-                <span class="free-shipping">FREE</span>
-            </div>
-
-            <div class="summary-total">
-                <span>Total</span>
-                <span>{{ cartService.cartTotal() | currency:'INR' }}</span>
-            </div>
-
-            <button class="checkout-btn" routerLink="/checkout">
-                Proceed to Checkout
-            </button>
-
-            <a routerLink="/products" class="continue-shopping">
-                ← Continue Shopping
-            </a>
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>Order Summary</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>{{ cartService.cartTotal() | currency:'INR' }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span class="free-shipping">FREE</span>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span>{{ cartService.cartTotal() | currency:'INR' }}</span>
+                    </div>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-raised-button color="accent" class="full-width-btn" routerLink="/checkout">
+                        Proceed to Checkout
+                    </button>
+                    <button mat-button class="full-width-btn mt-2" routerLink="/products">
+                        Continue Shopping
+                    </button>
+                </mat-card-actions>
+            </mat-card>
         </aside>
     </div>
     }
