@@ -38,7 +38,7 @@
 
                 <div class="item-details">
                     <h3>{{ item.productName }}</h3>
-                    <p class="item-price">{{ item.price | currency }} each</p>
+                    <p class="item-price">{{ item.price | currency:'INR' }} each</p>
 
                     @if (!item.inStock) {
                     <span class="stock-warning">⚠️ Limited stock</span>
@@ -53,7 +53,7 @@
 
                 <div class="item-subtotal">
                     <span class="subtotal-label">Subtotal</span>
-                    <span class="subtotal-price">{{ item.subtotal | currency }}</span>
+                    <span class="subtotal-price">{{ item.subtotal | currency:'INR' }}</span>
                 </div>
 
                 <button class="remove-btn" (click)="removeItem(item.id)">
@@ -78,7 +78,7 @@
 
             <div class="summary-total">
                 <span>Total</span>
-                <span>{{ cartService.cartTotal() | currency }}</span>
+                <span>{{ cartService.cartTotal() | currency:'INR' }}</span>
             </div>
 
             <button class="checkout-btn" routerLink="/checkout">

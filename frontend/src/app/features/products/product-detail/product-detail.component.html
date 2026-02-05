@@ -37,7 +37,7 @@
             }
 
             <div class="product-price">
-                <span class="price">{{ product()!.price | currency }}</span>
+                <span class="price">{{ product()!.price | currency:'INR' }}</span>
                 @if (product()!.inStock) {
                 <span class="stock-badge in-stock">✓ In Stock</span>
                 } @else {

@@ -21,7 +21,7 @@
         }
 
         <div class="product-footer">
-            <span class="product-price">{{ product.price | currency }}</span>
+            <span class="product-price">{{ product.price | currency:'INR' }}</span>
             <button class="add-to-cart-btn" (click)="onAddToCart($event)" [disabled]="!product.inStock">
                 {{ product.inStock ? 'Add to Cart' : 'Sold Out' }}
             </button>

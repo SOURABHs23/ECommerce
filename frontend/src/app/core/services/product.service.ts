@@ -56,9 +56,7 @@ export class ProductService {
         return this.http.get<PageResponse<Product>>(`${this.apiUrl}/category/${categoryId}`, { params });
     }
 
-    getFeaturedProducts(): Observable<Product[]> {
-        return this.http.get<Product[]>(`${this.apiUrl}/featured`);
-    }
+
 
     createProduct(product: ProductRequest): Observable<Product> {
         return this.http.post<Product>(this.apiUrl, product);

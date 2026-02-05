@@ -52,7 +52,7 @@
             <p>Total Items: {{ cartService.cartItemCount() }}</p>
             <div class="total-row">
                 <span>Total:</span>
-                <span class="price">{{ cartService.cartTotal() | currency }}</span>
+                <span class="price">{{ cartService.cartTotal() | currency:'INR' }}</span>
             </div>
 
             <button class="place-order-btn" (click)="placeOrder()" [disabled]="placingOrder() || !selectedAddressId()">
