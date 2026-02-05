@@ -43,8 +43,12 @@ export class LoginComponent {
       next: (response) => {
         this.loading = false;
         if (response.success) {
-          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-          this.router.navigate([returnUrl]);
+          if (this.authService.isAdmin()) {
+            this.router.navigate(['/admin']);
+          } else {
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+            this.router.navigate([returnUrl]);
+          }
         } else {
           this.errorMessage = response.message || 'Login failed';
         }

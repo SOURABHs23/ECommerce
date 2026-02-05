@@ -1,0 +1,161 @@
+.dashboard-container {
+    padding: 2rem;
+    max-width: 1400px;
+    /* Wider layout for dashboard */
+    margin: 0 auto;
+    font-family: 'Inter', sans-serif;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.header-section h1 {
+    margin: 0;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.subtitle {
+    color: #666;
+    margin-top: 0.25rem;
+    font-size: 0.95rem;
+}
+
+/* Metrics Cards */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card mat-card-content {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem !important;
+}
+
+.metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.metric-icon mat-icon {
+    color: white;
+}
+
+.bg-blue {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.bg-orange {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.bg-red {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.metric-info h3 {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #666;
+}
+
+.metric-value {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.2;
+}
+
+/* Content Card */
+.content-card {
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.search-field {
+    width: 300px;
+    font-size: 14px;
+}
+
+::ng-deep .search-field .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+    /* Hide helper text space for cleaner look */
+}
+
+/* Table */
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+}
+
+.product-info-cell {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.product-thumbnail {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-right: 1rem;
+    border: 1px solid #f0f0f0;
+}
+
+.product-name {
+    font-weight: 500;
+    color: #111;
+}
+
+.text-secondary {
+    font-size: 0.85em;
+    color: #666;
+}
+
+.font-mono {
+    font-family: 'Roboto Mono', monospace;
+    color: #555;
+}
+
+.text-right {
+    text-align: right;
+    justify-content: flex-end;
+}
+
+.loading-shade {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}

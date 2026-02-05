@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './core/guards/admin.guard';
+import { homeRedirectGuard } from './core/guards/home-redirect.guard';
 
 
 export const routes: Routes = [
@@ -16,11 +17,17 @@ export const routes: Routes = [
                 path: 'products/new',
                 loadComponent: () => import('./features/admin/product-form/product-form.component').then(m => m.ProductFormComponent),
                 title: 'Add New Product'
+            },
+            {
+                path: 'products/edit/:id',
+                loadComponent: () => import('./features/admin/product-form/product-form.component').then(m => m.ProductFormComponent),
+                title: 'Edit Product'
             }
         ]
     },
     {
         path: '',
+        canActivate: [homeRedirectGuard],
         loadComponent: () => import('./features/products/product-list/product-list.component')
             .then(m => m.ProductListComponent),
         title: 'ShopHub - Home'

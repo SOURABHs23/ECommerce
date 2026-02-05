@@ -1,71 +1,106 @@
-.product-form-container {
-    max-width: 600px;
+.form-container {
+    max-width: 1100px;
     margin: 2rem auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    padding: 0 1.5rem;
+    font-family: 'Inter', sans-serif;
+    padding-bottom: 80px;
+    /* Space for fixed action bar if needed, or just bottom spacing */
 }
 
-h2 {
-    margin-bottom: 1.5rem;
+.form-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.form-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
     color: #1a1a1a;
 }
 
-.form-group {
-    margin-bottom: 1rem;
+.subtitle {
+    margin: 0;
+    color: #666;
+    font-size: 0.875rem;
 }
 
-.form-row {
+.product-form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.mt-4 {
+    margin-top: 1.5rem;
+}
+
+mat-card {
+    overflow: hidden;
+    /* Ensure content doesn't spill */
+}
+
+mat-card-header {
+    padding: 16px 16px 0 16px !important;
+    margin-bottom: 8px;
+}
+
+mat-card-title {
+    font-size: 1.125rem !important;
+    font-weight: 500 !important;
+}
+
+mat-card-content {
+    padding: 16px !important;
+}
+
+.error-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #d32f2f;
+    background: #ffebee;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #ffcdd2;
+}
+
+.image-preview {
+    margin-top: 1rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.form-actions-bar {
+    display: flex;
+    justify-content: flex-end;
     gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
 }
 
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #374151;
-}
-
-input, textarea {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-textarea {
-    resize: vertical;
-}
-
-.error-alert {
-    padding: 0.75rem;
-    background-color: #fee2e2;
-    color: #dc2626;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-}
-
-button {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: #2563eb;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-button:hover:not(:disabled) {
-    background-color: #1d4ed8;
-}
-
-button:disabled {
-    background-color: #93c5fd;
-    cursor: not-allowed;
+@media (max-width: 768px) {
+    .product-form-grid {
+        grid-template-columns: 1fr;
+    }
 }

@@ -21,7 +21,8 @@ export interface ProductRequest {
     sku?: string;
     brand?: string;
     categoryId?: number;
-    imageUrls?: string[];
+    images?: string[]; // Updated to match backend/component usage
+    imageUrls?: string[]; // Keeping for backward compatibility if needed
     featured?: boolean;
 }
 
