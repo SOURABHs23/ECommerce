@@ -3,14 +3,14 @@ package com.ecommerce.controller;
 import com.ecommerce.dto.request.SendEmailRequest;
 import com.ecommerce.dto.request.SendSmsRequest;
 import com.ecommerce.dto.response.ApiResponse;
-import com.ecommerce.security.JwtUtils;
+import com.ecommerce.entity.User;
 import com.ecommerce.service.EmailService;
 import com.ecommerce.service.OtpService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -46,8 +46,8 @@ public class OtpController {
 
     @PostMapping("/send-sms")
     public ResponseEntity<ApiResponse> sendSms(@RequestBody SendSmsRequest request,
-            HttpServletRequest httpRequest) {
-        String jwt = JwtUtils.extractJwtFromRequest(httpRequest);
+            @AuthenticationPrincipal User user) {
+        String jwt = user.getSessionToken();
         logger.info("Sending SMS OTP request");
         String message = otpService.sendSms(request.getMobiles(), jwt);
 
@@ -60,8 +60,8 @@ public class OtpController {
 
     @GetMapping("/verify/{otp}")
     public ResponseEntity<ApiResponse> verifyOtp(@PathVariable String otp,
-            HttpServletRequest httpRequest) {
-        String jwt = JwtUtils.extractJwtFromRequest(httpRequest);
+            @AuthenticationPrincipal User user) {
+        String jwt = user.getSessionToken();
         logger.info("Verifying OTP");
         String message = otpService.verifyOtp(otp, jwt);
 
