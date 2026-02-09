@@ -49,8 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (userOpt.isPresent()) {
                     User user = userOpt.get();
                     if (jwt.equals(user.getSessionToken())) {
-                        List<SimpleGrantedAuthority> authorities = java.util.Collections
-                                .singletonList(new SimpleGrantedAuthority(user.getRole()));
+                        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole()));
                         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                                 user, null, authorities);
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
