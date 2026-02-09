@@ -43,9 +43,10 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
                         .requestMatchers("/api/products/**").hasRole("ADMIN")
                         .requestMatchers("/api/categories/**").permitAll()
-                        .requestMatchers("/api/cart/**").authenticated()
-                        .requestMatchers("/api/orders/**").authenticated()
-                        .requestMatchers("/api/addresses/**").authenticated()
+                        // Shopping features restricted to regular users only (not admins)
+                        .requestMatchers("/api/cart/**").hasRole("USER")
+                        .requestMatchers("/api/orders/**").hasRole("USER")
+                        .requestMatchers("/api/addresses/**").hasRole("USER")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

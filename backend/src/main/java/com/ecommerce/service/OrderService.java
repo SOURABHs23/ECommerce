@@ -63,7 +63,10 @@ public class OrderService {
         order.setShippingAddress(shippingAddress);
         order.setNotes(request.getNotes());
         order.setPaymentMethod(request.getPaymentMethod());
-        order.setStatus(OrderStatus.PENDING);
+        // Auto-confirm orders since no real payment gateway is integrated
+        // In production with real payments, this would be PENDING until payment is
+        // verified
+        order.setStatus(OrderStatus.CONFIRMED);
 
         BigDecimal subtotal = BigDecimal.ZERO;
 

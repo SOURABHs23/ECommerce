@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -74,11 +75,11 @@ public class Order {
         item.setOrder(this);
     }
 
-    // Generate order number
+    // Generate order number using UUID for collision safety
     @PrePersist
     public void generateOrderNumber() {
         if (orderNumber == null) {
-            orderNumber = "ORD-" + System.currentTimeMillis();
+            orderNumber = "ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         }
     }
 }
