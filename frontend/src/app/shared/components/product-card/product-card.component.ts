@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { Product } from '../../../core/models';
+import { AuthService } from '../../../core/services';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,6 +21,7 @@ export class ProductCardComponent {
   @Output() addToCart = new EventEmitter<Product>();
 
   private router = inject(Router);
+  authService = inject(AuthService);
 
   onCardClick(): void {
     this.router.navigate(['/products', this.product.id]);

@@ -57,6 +57,7 @@
                 <p><strong>Available:</strong> {{ product()!.stock }} units</p>
             </div>
 
+            @if (!authService.isAdmin()) {
             <div class="quantity-section">
                 <label>Quantity:</label>
                 <div class="quantity-controls">
@@ -75,6 +76,7 @@
                     Buy Now
                 </button>
             </div>
+            }
         </div>
     </div>
     } @else {

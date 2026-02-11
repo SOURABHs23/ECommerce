@@ -32,10 +32,12 @@
         </div>
     </mat-card-content>
 
+    @if (!authService.isAdmin()) {
     <mat-card-actions align="end" (click)="$event.stopPropagation()">
         <button mat-raised-button color="primary" (click)="onAddToCart($event)" [disabled]="!product.inStock">
             <mat-icon>add_shopping_cart</mat-icon>
             {{ product.inStock ? 'Add' : 'Sold Out' }}
         </button>
     </mat-card-actions>
+    }
 </mat-card>

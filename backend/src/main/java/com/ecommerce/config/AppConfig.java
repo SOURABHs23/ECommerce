@@ -8,6 +8,5 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @EnableScheduling
 public class AppConfig {
-    // RestTemplate removed - not currently used
     // Add beans here as needed
 }

@@ -16,7 +16,7 @@ export class ProductDetailComponent implements OnInit {
   private router = inject(Router);
   private productService = inject(ProductService);
   private cartService = inject(CartService);
-  private authService = inject(AuthService);
+  authService = inject(AuthService);
 
   product = signal<Product | null>(null);
   loading = signal(true);
