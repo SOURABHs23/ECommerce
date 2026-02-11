@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { OrderService } from '../../core/services/order.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -16,7 +16,6 @@ import { MatDividerModule } from '@angular/material/divider';
     selector: 'app-orders',
     standalone: true,
     imports: [
-        CommonModule,
         RouterLink,
         CurrencyPipe,
         DatePipe,

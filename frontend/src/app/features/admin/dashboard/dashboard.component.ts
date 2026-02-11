@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, ViewChild, signal, computed, effect } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models';
@@ -19,7 +19,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
     CurrencyPipe,
     MatTableModule,

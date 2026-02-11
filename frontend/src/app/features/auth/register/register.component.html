@@ -18,13 +18,17 @@
                     <mat-form-field appearance="outline" class="half-width">
                         <mat-label>First Name</mat-label>
                         <input matInput formControlName="firstname" placeholder="John">
-                        <mat-error *ngIf="isFieldInvalid('firstname')">Required</mat-error>
+                        @if (isFieldInvalid('firstname')) {
+                        <mat-error>Required</mat-error>
+                        }
                     </mat-form-field>
 
                     <mat-form-field appearance="outline" class="half-width">
                         <mat-label>Last Name</mat-label>
                         <input matInput formControlName="lastname" placeholder="Doe">
-                        <mat-error *ngIf="isFieldInvalid('lastname')">Required</mat-error>
+                        @if (isFieldInvalid('lastname')) {
+                        <mat-error>Required</mat-error>
+                        }
                     </mat-form-field>
                 </div>
 
@@ -32,21 +36,27 @@
                     <mat-label>Email</mat-label>
                     <input matInput type="email" formControlName="email">
                     <mat-icon matSuffix>email</mat-icon>
-                    <mat-error *ngIf="isFieldInvalid('email')">Invalid email</mat-error>
+                    @if (isFieldInvalid('email')) {
+                    <mat-error>Invalid email</mat-error>
+                    }
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Mobile Number</mat-label>
                     <input matInput type="tel" formControlName="mobile">
                     <mat-icon matSuffix>phone</mat-icon>
-                    <mat-error *ngIf="isFieldInvalid('mobile')">Required</mat-error>
+                    @if (isFieldInvalid('mobile')) {
+                    <mat-error>Required</mat-error>
+                    }
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Password</mat-label>
                     <input matInput type="password" formControlName="password">
                     <mat-icon matSuffix>lock</mat-icon>
-                    <mat-error *ngIf="isFieldInvalid('password')">Required</mat-error>
+                    @if (isFieldInvalid('password')) {
+                    <mat-error>Required</mat-error>
+                    }
                 </mat-form-field>
 
                 <div class="auth-actions">

@@ -18,14 +18,18 @@
                     <mat-label>Email</mat-label>
                     <input matInput type="email" formControlName="email" placeholder="Enter your email">
                     <mat-icon matSuffix>email</mat-icon>
-                    <mat-error *ngIf="isFieldInvalid('email')">Please enter a valid email</mat-error>
+                    @if (isFieldInvalid('email')) {
+                    <mat-error>Please enter a valid email</mat-error>
+                    }
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Password</mat-label>
                     <input matInput type="password" formControlName="password" placeholder="Enter your password">
                     <mat-icon matSuffix>lock</mat-icon>
-                    <mat-error *ngIf="isFieldInvalid('password')">Password is required</mat-error>
+                    @if (isFieldInvalid('password')) {
+                    <mat-error>Password is required</mat-error>
+                    }
                 </mat-form-field>
 
                 <div class="auth-actions">

@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AddressService, OrderService, CartService } from '../../../core/services';
@@ -19,7 +19,7 @@ import { MatChipsModule } from '@angular/material/chips';
   selector: 'app-checkout',
   standalone: true,
   imports: [
-    CommonModule,
+    CurrencyPipe,
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
