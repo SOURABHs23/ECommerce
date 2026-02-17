@@ -2,7 +2,6 @@ package com.ecommerce.security;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
@@ -10,7 +9,6 @@ import org.springframework.util.StringUtils;
  * Centralizes the logic for extracting JWT from Authorization header or
  * cookies.
  */
-@Component
 public class JwtUtils {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";

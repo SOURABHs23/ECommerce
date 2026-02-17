@@ -65,10 +65,4 @@ public class Product {
         images.add(image);
         image.setProduct(this);
     }
-
-    // Helper method to remove image
-    public void removeImage(ProductImage image) {
-        images.remove(image);
-        image.setProduct(null);
-    }
 }

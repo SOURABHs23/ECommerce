@@ -39,7 +39,6 @@ public class OrderService {
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .map(OrderResponse::fromEntity);
     }
-    // ... existing methods ...
 
     @Transactional
     public OrderResponse createOrder(OrderRequest request, User user) {
@@ -156,15 +155,4 @@ public class OrderService {
         return OrderResponse.fromEntity(order);
     }
 
-    @Transactional
-    public OrderResponse updateOrderStatus(Long orderId, OrderStatus status) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-
-        order.setStatus(status);
-        order = orderRepository.save(order);
-
-        logger.info("Updated order {} status to {}", order.getOrderNumber(), status);
-        return OrderResponse.fromEntity(order);
-    }
 }

@@ -40,36 +40,4 @@ public class ImageService {
         return imageUrls;
     }
 
-    /**
-     * Get a single product image.
-     * 
-     * @param productName The name of the product
-     * @return Image URL
-     */
-    public String fetchSingleProductImage(String productName) {
-        int seed = Math.abs(productName.hashCode());
-        return String.format("https://picsum.photos/seed/%d/800/600", seed);
-    }
-
-    /**
-     * Generate product images with specific dimensions.
-     * 
-     * @param productName The name of the product
-     * @param count       Number of images
-     * @param width       Image width
-     * @param height      Image height
-     * @return List of image URLs
-     */
-    public List<String> fetchProductImages(String productName, int count, int width, int height) {
-        List<String> imageUrls = new ArrayList<>();
-        int seed = Math.abs(productName.hashCode());
-
-        for (int i = 0; i < count; i++) {
-            String imageUrl = String.format("https://picsum.photos/seed/%d/%d/%d", seed + i * 100, width, height);
-            imageUrls.add(imageUrl);
-        }
-
-        logger.info("Generated {} images ({}x{}) for product: {}", count, width, height, productName);
-        return imageUrls;
-    }
 }
