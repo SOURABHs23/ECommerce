@@ -47,10 +47,7 @@ export class AuthService {
                     this.setToken(response.token);
                 }
             }),
-            catchError(error => {
-                console.error('Signup error:', error);
-                return throwError(() => error);
-            })
+            catchError(error => throwError(() => error))
         );
     }
 
@@ -61,10 +58,7 @@ export class AuthService {
                     this.setToken(response.token);
                 }
             }),
-            catchError(error => {
-                console.error('Signin error:', error);
-                return throwError(() => error);
-            })
+            catchError(error => throwError(() => error))
         );
     }
 

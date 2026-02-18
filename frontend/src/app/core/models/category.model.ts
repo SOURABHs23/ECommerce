@@ -8,10 +8,3 @@ export interface Category {
     subCategories: Category[];
     productCount: number;
 }
-
-export interface CategoryRequest {
-    name: string;
-    description?: string;
-    imageUrl?: string;
-    parentCategoryId?: number;
-}

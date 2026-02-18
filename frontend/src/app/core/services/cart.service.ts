@@ -42,12 +42,6 @@ export class CartService {
         );
     }
 
-    clearCart(): Observable<void> {
-        return this.http.delete<void>(this.apiUrl).pipe(
-            tap(() => this.cartSignal.set(null))
-        );
-    }
-
     refreshCart(): void {
         this.getCart().subscribe();
     }

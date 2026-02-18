@@ -56,8 +56,6 @@ export class ProductService {
         return this.http.get<PageResponse<Product>>(`${this.apiUrl}/category/${categoryId}`, { params });
     }
 
-
-
     createProduct(product: ProductRequest): Observable<Product> {
         return this.http.post<Product>(this.apiUrl, product);
     }

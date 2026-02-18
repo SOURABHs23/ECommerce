@@ -2,7 +2,6 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { OrderService } from '../../core/services/order.service';
-import { AuthService } from '../../core/services/auth.service';
 import { Order, PageResponse } from '../../core/models';
 
 import { MatCardModule } from '@angular/material/card';
@@ -31,7 +30,6 @@ import { MatDividerModule } from '@angular/material/divider';
 })
 export class OrdersComponent implements OnInit {
     private orderService = inject(OrderService);
-    authService = inject(AuthService);
 
     orders = signal<Order[]>([]);
     loading = signal(true);
