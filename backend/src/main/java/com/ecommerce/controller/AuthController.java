@@ -35,8 +35,10 @@ public class AuthController {
         if (response.getToken() != null) {
             Cookie cookie = new Cookie("auth_token", response.getToken());
             cookie.setHttpOnly(true);
+            cookie.setSecure(true);
             cookie.setMaxAge(3600); // 1 hour
             cookie.setPath("/");
+            cookie.setAttribute("SameSite", "Strict");
             httpResponse.addCookie(cookie);
         }
 

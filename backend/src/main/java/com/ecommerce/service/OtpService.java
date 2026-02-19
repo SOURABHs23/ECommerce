@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Random;
+import java.security.SecureRandom;
 
 @Service
 public class OtpService {
@@ -34,9 +34,10 @@ public class OtpService {
         this.smsService = smsService;
     }
 
+    private static final SecureRandom secureRandom = new SecureRandom();
+
     public Integer generateOtp() {
-        Random random = new Random();
-        return 1000 + random.nextInt(9000); // Generates 4-digit OTP
+        return 1000 + secureRandom.nextInt(9000); // Generates 4-digit OTP
     }
 
     public String sendSms(List<Long> mobiles, String jwt) {
