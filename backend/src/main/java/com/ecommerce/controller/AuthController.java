@@ -4,7 +4,7 @@ import com.ecommerce.dto.request.SignInRequest;
 import com.ecommerce.dto.request.SignUpRequest;
 import com.ecommerce.dto.response.AuthResponse;
 import com.ecommerce.service.AuthService;
-import jakarta.servlet.http.Cookie;
+import com.ecommerce.service.CookieService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final CookieService cookieService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, CookieService cookieService) {
         this.authService = authService;
+        this.cookieService = cookieService;
     }
 
     @PostMapping("/signup")
@@ -31,15 +33,8 @@ public class AuthController {
             HttpServletResponse httpResponse) {
         AuthResponse response = authService.signin(request);
 
-        // Set cookie for backward compatibility
         if (response.getToken() != null) {
-            Cookie cookie = new Cookie("auth_token", response.getToken());
-            cookie.setHttpOnly(true);
-            cookie.setSecure(true);
-            cookie.setMaxAge(3600); // 1 hour
-            cookie.setPath("/");
-            cookie.setAttribute("SameSite", "Strict");
-            httpResponse.addCookie(cookie);
+            cookieService.addAuthCookie(httpResponse, response.getToken());
         }
 
         return ResponseEntity.ok(response);

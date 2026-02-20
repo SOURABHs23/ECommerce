@@ -18,17 +18,19 @@ public class EmailServiceImpl implements EmailService {
     private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
 
     private final JavaMailSender mailSender;
+    private final OrderEmailComposer orderEmailComposer;
 
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-    public EmailServiceImpl(JavaMailSender mailSender) {
+    public EmailServiceImpl(JavaMailSender mailSender, OrderEmailComposer orderEmailComposer) {
         this.mailSender = mailSender;
+        this.orderEmailComposer = orderEmailComposer;
     }
 
     @Override
     @Async
-    public void sendOrderConfirmation(String to, String orderNumber, Object orderDetails) {
+    public void sendOrderConfirmation(String to, String orderNumber, OrderResponse orderDetails) {
         try {
             logger.info("Sending order confirmation email to: {}", to);
             MimeMessage message = mailSender.createMimeMessage();
@@ -38,8 +40,8 @@ public class EmailServiceImpl implements EmailService {
             helper.setTo(to);
             helper.setSubject("Order Confirmation - " + orderNumber);
 
-            String htmlContent = buildOrderEmailContent(orderNumber, (OrderResponse) orderDetails);
-            helper.setText(htmlContent, true); // true = html
+            String htmlContent = orderEmailComposer.buildOrderEmailContent(orderNumber, orderDetails);
+            helper.setText(htmlContent, true);
 
             mailSender.send(message);
             logger.info("Order confirmation email sent successfully to: {}", to);
@@ -68,30 +70,5 @@ public class EmailServiceImpl implements EmailService {
                 logger.error("Failed to send email to {}: {}", to, e.getMessage());
             }
         }
-    }
-
-    private String buildOrderEmailContent(String orderNumber, OrderResponse order) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html><body>");
-        sb.append("<h1>Thank you for your order!</h1>");
-        sb.append("<p>Your order number is: <strong>").append(orderNumber).append("</strong></p>");
-        sb.append("<p>Total Amount: $").append(order.getTotalAmount()).append("</p>");
-        sb.append("<h3>Order Items:</h3>");
-        sb.append("<ul>");
-
-        if (order.getItems() != null) {
-            order.getItems().forEach(item -> {
-                sb.append("<li>")
-                        .append(item.getProductName())
-                        .append(" x ").append(item.getQuantity())
-                        .append(" - $").append(item.getSubtotal())
-                        .append("</li>");
-            });
-        }
-
-        sb.append("</ul>");
-        sb.append("<p>We will notify you when your items are shipped.</p>");
-        sb.append("</body></html>");
-        return sb.toString();
     }
 }
