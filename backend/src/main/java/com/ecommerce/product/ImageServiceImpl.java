@@ -1,0 +1,42 @@
+package com.ecommerce.product;
+
+import com.ecommerce.product.ImageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Service for generating real product images using Lorem Picsum.
+ * No API key required - works immediately!
+ */
+@Service
+public class ImageServiceImpl implements ImageService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ImageServiceImpl.class);
+
+    /**
+     * Generate product images using Lorem Picsum.
+     * Each image is unique based on the product name.
+     *
+     * @param productName The name of the product (used as seed for consistent
+     *                    images)
+     * @param count       Number of images to generate
+     * @return List of image URLs
+     */
+    @Override
+    public List<String> fetchProductImages(String productName, int count) {
+        List<String> imageUrls = new ArrayList<>();
+        int seed = Math.abs(productName.hashCode());
+
+        for (int i = 0; i < count; i++) {
+            String imageUrl = String.format("https://picsum.photos/seed/%d/800/600", seed + i * 100);
+            imageUrls.add(imageUrl);
+        }
+
+        logger.info("Generated {} images for product: {}", count, productName);
+        return imageUrls;
+    }
+}
