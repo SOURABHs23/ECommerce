@@ -65,49 +65,127 @@ A full-stack E-Commerce application built with **Angular 18** and **Spring Boot 
 
 ```
 ECommerce/
-├── backend/                            # Spring Boot Application
+├── backend/                              # Spring Boot Application
 │   ├── src/main/java/com/ecommerce/
-│   │   ├── config/                     # AppConfig, SecurityConfig
-│   │   ├── controller/                 # REST API Endpoints
-│   │   │   ├── AddressController       #   /api/addresses
-│   │   │   ├── AuthController          #   /api/auth
-│   │   │   ├── CartController          #   /api/cart
-│   │   │   ├── CategoryController      #   /api/categories
-│   │   │   ├── HomeController          #   /
-│   │   │   ├── OrderController         #   /api/orders
-│   │   │   ├── OtpController           #   /api/otp
-│   │   │   └── ProductController       #   /api/products
-│   │   ├── dto/
-│   │   │   ├── request/                # Incoming request DTOs
-│   │   │   └── response/              # Outgoing response DTOs
-│   │   ├── entity/                     # JPA Entities (User, Product, Order, Cart, …)
-│   │   ├── exception/                  # GlobalExceptionHandler + custom exceptions
-│   │   ├── repository/                 # Spring Data JPA Repositories
-│   │   ├── security/                   # JWT filter, token provider, utils
-│   │   └── service/                    # Business logic layer
-│   ├── .env.example                    # Template for environment variables
+│   │   │
+│   │   ├── common/                       # ── Shared Infrastructure ──
+│   │   │   ├── config/                   #   SecurityConfig
+│   │   │   ├── security/                 #   JWT filter, token provider, CookieService
+│   │   │   ├── exception/                #   BadRequestException, ResourceNotFoundException
+│   │   │   ├── handler/                  #   GlobalExceptionHandler
+│   │   │   └── dto/                      #   ApiResponse
+│   │   │
+│   │   ├── auth/                         # ── 🔐 Auth Domain ──
+│   │   │   ├── AuthController            #   /api/auth
+│   │   │   ├── AuthService (interface)   #   Signup, Signin
+│   │   │   ├── AuthServiceImpl           #   Implementation
+│   │   │   ├── SignInRequest, SignUpRequest, AuthResponse
+│   │   │
+│   │   ├── user/                         # ── 👤 User Domain ──
+│   │   │   ├── User (entity)             #   JPA entity
+│   │   │   ├── UserRepository            #   Data access
+│   │   │   ├── UserService (interface)   #   Centralized user access
+│   │   │   ├── UserServiceImpl           #   Implementation
+│   │   │   └── HomeController            #   /
+│   │   │
+│   │   ├── product/                      # ── 📦 Product Domain ──
+│   │   │   ├── ProductController         #   /api/products
+│   │   │   ├── ProductService + Impl     #   CRUD, search, filter
+│   │   │   ├── ImageService + Impl       #   Product image fetching
+│   │   │   ├── Product, ProductImage     #   JPA entities
+│   │   │   ├── ProductRepository         #   Data access
+│   │   │   └── ProductRequest, ProductResponse
+│   │   │
+│   │   ├── category/                     # ── 📂 Category Domain ──
+│   │   │   ├── CategoryController        #   /api/categories
+│   │   │   ├── CategoryService + Impl    #   CRUD
+│   │   │   ├── Category                  #   JPA entity
+│   │   │   ├── CategoryRepository        #   Data access
+│   │   │   └── CategoryRequest, CategoryResponse
+│   │   │
+│   │   ├── cart/                         # ── 🛒 Cart Domain ──
+│   │   │   ├── CartController            #   /api/cart
+│   │   │   ├── CartService + Impl        #   Add, update, remove, clear
+│   │   │   ├── Cart, CartItem            #   JPA entities
+│   │   │   ├── CartRepository, CartItemRepository
+│   │   │   └── CartItemRequest, CartResponse
+│   │   │
+│   │   ├── order/                        # ── 📋 Order Domain ──
+│   │   │   ├── OrderController           #   /api/orders
+│   │   │   ├── OrderService + Impl       #   Create, cancel, track
+│   │   │   ├── Order, OrderItem, OrderStatus
+│   │   │   ├── OrderRepository           #   Data access
+│   │   │   └── OrderRequest, OrderResponse
+│   │   │
+│   │   ├── address/                      # ── 📍 Address Domain ──
+│   │   │   ├── AddressController         #   /api/addresses
+│   │   │   ├── AddressService + Impl     #   CRUD + default management
+│   │   │   ├── Address                   #   JPA entity
+│   │   │   ├── AddressRepository         #   Data access
+│   │   │   └── AddressRequest, AddressResponse
+│   │   │
+│   │   └── notification/                 # ── 🔔 Notification Domain ──
+│   │       ├── OtpController             #   /api/otp
+│   │       ├── OtpService + Impl         #   OTP generate, send, verify
+│   │       ├── OtpCleanupScheduler       #   Scheduled expired OTP cleanup
+│   │       ├── EmailService + Impl       #   Transactional emails
+│   │       ├── SmsService + Impl         #   Twilio SMS
+│   │       ├── OrderEmailComposer        #   Order email templates
+│   │       ├── Otp, OtpRepository        #   JPA entity + data access
+│   │       └── SendEmailRequest, SendSmsRequest
+│   │
+│   ├── .env.example                      # Template for environment variables
 │   └── pom.xml
 │
-├── frontend/                           # Angular Application
+├── frontend/                             # Angular Application
 │   ├── src/app/
 │   │   ├── core/
-│   │   │   ├── guards/                 # Auth, Admin, HomeRedirect guards
-│   │   │   ├── interceptors/           # HTTP interceptors (JWT attach)
-│   │   │   ├── models/                 # TypeScript interfaces / models
-│   │   │   └── services/              # API services (auth, product, cart, order, …)
+│   │   │   ├── guards/                   # Auth, Admin, HomeRedirect guards
+│   │   │   ├── interceptors/             # HTTP interceptors (JWT attach)
+│   │   │   ├── models/                   # TypeScript interfaces / models
+│   │   │   └── services/                # API services (auth, product, cart, order, …)
 │   │   ├── features/
-│   │   │   ├── admin/                  # Dashboard, ProductForm
-│   │   │   ├── auth/                   # Login, Register
-│   │   │   ├── cart/                   # Shopping cart page
-│   │   │   ├── checkout/              # Checkout flow
-│   │   │   ├── orders/                # Order history
-│   │   │   └── products/             # Product list, Product detail
+│   │   │   ├── admin/                    # Dashboard, ProductForm
+│   │   │   ├── auth/                     # Login, Register
+│   │   │   ├── cart/                     # Shopping cart page
+│   │   │   ├── checkout/                # Checkout flow
+│   │   │   ├── orders/                  # Order history
+│   │   │   └── products/               # Product list, Product detail
 │   │   └── shared/
-│   │       └── components/            # Header, Footer, ProductCard
+│   │       └── components/              # Header, Footer, ProductCard
 │   └── package.json
 │
-└── ECommerce_API.postman_collection.json   # Postman collection for all endpoints
+└── ECommerce_API.postman_collection.json # Postman collection for all endpoints
 ```
+
+---
+
+## 🏗️ Architecture
+
+### Domain-Driven Design (Microservice-Ready)
+
+The backend is organized by **business domain** (vertical slicing), not by technical layer. Each domain package is self-contained with its own controller, service, entities, DTOs, and repositories — making it straightforward to extract into an independent microservice.
+
+| Domain | Responsibility | API Prefix |
+|---|---|---|
+| `auth/` | User registration & login | `/api/auth` |
+| `user/` | User entity & centralized access | — |
+| `product/` | Product catalog, search, images | `/api/products` |
+| `category/` | Product categories | `/api/categories` |
+| `cart/` | Shopping cart management | `/api/cart` |
+| `order/` | Order creation, tracking, cancellation | `/api/orders` |
+| `address/` | Shipping address book | `/api/addresses` |
+| `notification/` | Email, SMS, OTP verification | `/api/otp` |
+
+### SOLID Principles Applied
+
+| Principle | Implementation |
+|---|---|
+| **Single Responsibility** | OTP cleanup extracted to `OtpCleanupScheduler`; cookie logic to `CookieService`; email composition to `OrderEmailComposer` |
+| **Open/Closed** | All services are interfaces with `Impl` classes — swap implementations without modifying consumers |
+| **Liskov Substitution** | `EmailService.sendOrderConfirmation` uses `OrderResponse` (typed) instead of `Object` |
+| **Interface Segregation** | Email composition separated from email sending; domain-specific concerns stay in their domain |
+| **Dependency Inversion** | Controllers depend on service interfaces; `UserService` abstracts all user data access across domains |
 
 ---
 
@@ -216,7 +294,10 @@ Import this file into [Postman](https://www.postman.com/) to explore and test al
 
 ## 🧑‍💻 Development Notes
 
+*   **Domain-Driven Structure** — Each backend domain is a self-contained module with its own controller, service interface, implementation, entities, repositories, and DTOs. This enables clean microservice extraction when needed.
+*   **Service Interfaces** — All business logic is behind interfaces (`CartService`, `OrderService`, etc.) with corresponding `Impl` classes, following OCP and DIP.
+*   **UserService Abstraction** — `UserRepository` is only accessed within the `user/` package. All other domains use the `UserService` interface, reducing coupling.
+*   **Long userId Pattern** — Service methods accept `Long userId` instead of the full `User` entity. Controllers extract the ID from `@AuthenticationPrincipal` and pass only the ID downstream.
 *   **Standalone Components** — The Angular frontend uses standalone components with lazy-loaded routes (no NgModules).
-*   **DTOs** — The backend uses separate request/response DTOs to decouple API contracts from JPA entities.
 *   **Global Error Handling** — `GlobalExceptionHandler` returns structured error responses for `ResourceNotFoundException`, `BadRequestException`, and validation errors.
 *   **Environment Variables** — Spring Boot loads configuration from `backend/.env` via `spring.config.import`. See `.env.example` for all required keys.
