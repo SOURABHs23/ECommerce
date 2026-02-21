@@ -1,9 +1,6 @@
 package com.ecommerce.address;
 
-import com.ecommerce.address.AddressRequest;
-import com.ecommerce.address.AddressResponse;
 import com.ecommerce.user.User;
-import com.ecommerce.address.AddressService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +35,7 @@ public class AddressController {
     public ResponseEntity<AddressResponse> createAddress(
             @Valid @RequestBody AddressRequest addressRequest,
             @AuthenticationPrincipal User user) {
-        AddressResponse address = addressService.createAddress(addressRequest, user);
+        AddressResponse address = addressService.createAddress(addressRequest, user.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(address);
     }
 

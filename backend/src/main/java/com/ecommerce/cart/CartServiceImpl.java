@@ -1,17 +1,11 @@
 package com.ecommerce.cart;
 
-import com.ecommerce.cart.CartItemRequest;
-import com.ecommerce.cart.CartResponse;
-import com.ecommerce.cart.Cart;
-import com.ecommerce.cart.CartItem;
-import com.ecommerce.product.Product;
-import com.ecommerce.user.User;
 import com.ecommerce.common.exception.BadRequestException;
 import com.ecommerce.common.exception.ResourceNotFoundException;
-import com.ecommerce.cart.CartItemRepository;
-import com.ecommerce.cart.CartRepository;
+import com.ecommerce.product.Product;
 import com.ecommerce.product.ProductRepository;
-import com.ecommerce.cart.CartService;
+import com.ecommerce.user.User;
+import com.ecommerce.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,119 +21,107 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
+    private final UserService userService;
 
     public CartServiceImpl(CartRepository cartRepository, CartItemRepository cartItemRepository,
-            ProductRepository productRepository) {
+            ProductRepository productRepository, UserService userService) {
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
         this.productRepository = productRepository;
+        this.userService = userService;
     }
 
     @Override
-    public CartResponse getCart(User user) {
-        Cart cart = getOrCreateCart(user);
-        return CartResponse.fromEntity(cart);
+    public CartResponse getCart(Long userId) {
+        return cartRepository.findByUserIdWithItems(userId)
+                .map(CartResponse::fromEntity)
+                .orElse(new CartResponse());
     }
 
     @Override
     @Transactional
-    public CartResponse addToCart(CartItemRequest request, User user) {
-        Cart cart = getOrCreateCart(user);
-
+    public CartResponse addToCart(CartItemRequest request, Long userId) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        if (!product.getActive()) {
-            throw new BadRequestException("Product is not available");
+        if (product.getStock() < request.getQuantity()) {
+            throw new BadRequestException("Insufficient stock for: " + product.getName());
         }
 
-        if (product.getStock() < request.getQuantity()) {
-            throw new BadRequestException("Insufficient stock. Available: " + product.getStock());
-        }
+        Cart cart = cartRepository.findByUserIdWithItems(userId).orElseGet(() -> {
+            User user = userService.findById(userId);
+            Cart newCart = new Cart();
+            newCart.setUser(user);
+            return cartRepository.save(newCart);
+        });
 
         Optional<CartItem> existingItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId());
 
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
-            int newQuantity = item.getQuantity() + request.getQuantity();
-
-            if (product.getStock() < newQuantity) {
-                throw new BadRequestException("Insufficient stock. Available: " + product.getStock());
-            }
-
-            item.setQuantity(newQuantity);
+            item.setQuantity(item.getQuantity() + request.getQuantity());
             cartItemRepository.save(item);
         } else {
             CartItem item = new CartItem();
             item.setCart(cart);
             item.setProduct(product);
             item.setQuantity(request.getQuantity());
-            item.setPriceAtAdd(product.getPrice());
-            cart.addItem(item);
             cartItemRepository.save(item);
         }
 
-        logger.info("Added product {} to cart for user {}", product.getName(), user.getEmail());
-        return CartResponse.fromEntity(cartRepository.findByUserIdWithItems(user.getId()).orElse(cart));
+        logger.info("Added product {} to cart for user {}", product.getName(), userId);
+        return CartResponse.fromEntity(cartRepository.findByUserIdWithItems(userId).orElse(cart));
     }
 
     @Override
     @Transactional
-    public CartResponse updateCartItem(Long itemId, Integer quantity, User user) {
-        Cart cart = getOrCreateCart(user);
+    public CartResponse updateCartItem(Long itemId, Integer quantity, Long userId) {
+        Cart cart = cartRepository.findByUserIdWithItems(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
 
         CartItem item = cart.getItems().stream()
-                .filter(i -> i.getId().equals(itemId))
+                .filter(ci -> ci.getId().equals(itemId))
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Cart item not found"));
 
         if (quantity <= 0) {
-            cart.removeItem(item);
             cartItemRepository.delete(item);
         } else {
             if (item.getProduct().getStock() < quantity) {
-                throw new BadRequestException("Insufficient stock. Available: " + item.getProduct().getStock());
+                throw new BadRequestException("Insufficient stock");
             }
             item.setQuantity(quantity);
             cartItemRepository.save(item);
         }
 
-        logger.info("Updated cart item {} quantity to {}", itemId, quantity);
-        return CartResponse.fromEntity(cartRepository.findByUserIdWithItems(user.getId()).orElse(cart));
+        return CartResponse.fromEntity(cartRepository.findByUserIdWithItems(userId).orElse(cart));
     }
 
     @Override
     @Transactional
-    public CartResponse removeFromCart(Long itemId, User user) {
-        Cart cart = getOrCreateCart(user);
+    public CartResponse removeFromCart(Long itemId, Long userId) {
+        Cart cart = cartRepository.findByUserIdWithItems(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
 
         CartItem item = cart.getItems().stream()
-                .filter(i -> i.getId().equals(itemId))
+                .filter(ci -> ci.getId().equals(itemId))
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Cart item not found"));
 
-        cart.removeItem(item);
         cartItemRepository.delete(item);
+        cart.getItems().remove(item);
 
-        logger.info("Removed item {} from cart", itemId);
+        logger.info("Removed item {} from cart for user {}", itemId, userId);
         return CartResponse.fromEntity(cart);
     }
 
     @Override
     @Transactional
-    public void clearCart(User user) {
-        Cart cart = getOrCreateCart(user);
-        cart.clear();
-        cartRepository.save(cart);
-        logger.info("Cleared cart for user {}", user.getEmail());
-    }
-
-    private Cart getOrCreateCart(User user) {
-        return cartRepository.findByUserIdWithItems(user.getId())
-                .orElseGet(() -> {
-                    Cart newCart = new Cart();
-                    newCart.setUser(user);
-                    return cartRepository.save(newCart);
-                });
+    public void clearCart(Long userId) {
+        cartRepository.findByUserIdWithItems(userId).ifPresent(cart -> {
+            cart.clear();
+            cartRepository.save(cart);
+            logger.info("Cleared cart for user {}", userId);
+        });
     }
 }

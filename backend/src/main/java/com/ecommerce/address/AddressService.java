@@ -1,9 +1,5 @@
 package com.ecommerce.address;
 
-import com.ecommerce.address.AddressRequest;
-import com.ecommerce.address.AddressResponse;
-import com.ecommerce.user.User;
-
 import java.util.List;
 
 public interface AddressService {
@@ -11,7 +7,7 @@ public interface AddressService {
 
     AddressResponse getAddressById(Long addressId, Long userId);
 
-    AddressResponse createAddress(AddressRequest request, User user);
+    AddressResponse createAddress(AddressRequest request, Long userId);
 
     AddressResponse updateAddress(Long addressId, AddressRequest request, Long userId);
 

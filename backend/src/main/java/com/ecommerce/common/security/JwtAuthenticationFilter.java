@@ -1,9 +1,11 @@
 package com.ecommerce.common.security;
 
 import com.ecommerce.user.User;
-import com.ecommerce.user.UserRepository;
+import com.ecommerce.user.UserService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import java.util.List;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +20,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
 import java.util.Optional;
 
 @Component
@@ -27,11 +28,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtTokenProvider tokenProvider;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, UserRepository userRepository) {
+    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, UserService userService) {
         this.tokenProvider = tokenProvider;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String userId = tokenProvider.getUserIdFromToken(jwt);
 
                 // Verify user exists and token matches session token
-                Optional<User> userOpt = userRepository.findById(Long.parseLong(userId));
+                Optional<User> userOpt = userService.findOptionalById(Long.parseLong(userId));
                 if (userOpt.isPresent()) {
                     User user = userOpt.get();
                     if (jwt.equals(user.getSessionToken())) {

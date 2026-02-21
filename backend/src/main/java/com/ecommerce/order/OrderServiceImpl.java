@@ -11,6 +11,7 @@ import com.ecommerce.notification.EmailService;
 import com.ecommerce.product.Product;
 import com.ecommerce.product.ProductRepository;
 import com.ecommerce.user.User;
+import com.ecommerce.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -30,14 +31,17 @@ public class OrderServiceImpl implements OrderService {
     private final AddressRepository addressRepository;
     private final ProductRepository productRepository;
     private final EmailService emailService;
+    private final UserService userService;
 
     public OrderServiceImpl(OrderRepository orderRepository, CartRepository cartRepository,
-            AddressRepository addressRepository, ProductRepository productRepository, EmailService emailService) {
+            AddressRepository addressRepository, ProductRepository productRepository,
+            EmailService emailService, UserService userService) {
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
         this.addressRepository = addressRepository;
         this.productRepository = productRepository;
         this.emailService = emailService;
+        this.userService = userService;
     }
 
     @Override
@@ -48,15 +52,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResponse createOrder(OrderRequest request, User user) {
-        Cart cart = cartRepository.findByUserIdWithItems(user.getId())
+    public OrderResponse createOrder(OrderRequest request, Long userId) {
+        User user = userService.findById(userId);
+
+        Cart cart = cartRepository.findByUserIdWithItems(userId)
                 .orElseThrow(() -> new BadRequestException("Cart is empty"));
 
         if (cart.getItems().isEmpty()) {
             throw new BadRequestException("Cart is empty");
         }
 
-        Address shippingAddress = addressRepository.findByIdAndUserId(request.getShippingAddressId(), user.getId())
+        Address shippingAddress = addressRepository.findByIdAndUserId(request.getShippingAddressId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Shipping address not found"));
 
         Order order = new Order();

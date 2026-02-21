@@ -1,9 +1,6 @@
 package com.ecommerce.order;
 
-import com.ecommerce.order.OrderRequest;
-import com.ecommerce.order.OrderResponse;
 import com.ecommerce.user.User;
-import com.ecommerce.order.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,7 +44,7 @@ public class OrderController {
     public ResponseEntity<OrderResponse> createOrder(
             @Valid @RequestBody OrderRequest orderRequest,
             @AuthenticationPrincipal User user) {
-        OrderResponse order = orderService.createOrder(orderRequest, user);
+        OrderResponse order = orderService.createOrder(orderRequest, user.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 

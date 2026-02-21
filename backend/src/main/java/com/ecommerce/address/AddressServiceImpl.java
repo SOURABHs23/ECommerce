@@ -1,12 +1,8 @@
 package com.ecommerce.address;
 
-import com.ecommerce.address.AddressRequest;
-import com.ecommerce.address.AddressResponse;
-import com.ecommerce.address.Address;
-import com.ecommerce.user.User;
 import com.ecommerce.common.exception.ResourceNotFoundException;
-import com.ecommerce.address.AddressRepository;
-import com.ecommerce.address.AddressService;
+import com.ecommerce.user.User;
+import com.ecommerce.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,9 +17,11 @@ public class AddressServiceImpl implements AddressService {
     private static final Logger logger = LoggerFactory.getLogger(AddressServiceImpl.class);
 
     private final AddressRepository addressRepository;
+    private final UserService userService;
 
-    public AddressServiceImpl(AddressRepository addressRepository) {
+    public AddressServiceImpl(AddressRepository addressRepository, UserService userService) {
         this.addressRepository = addressRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -42,7 +40,9 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @Transactional
-    public AddressResponse createAddress(AddressRequest request, User user) {
+    public AddressResponse createAddress(AddressRequest request, Long userId) {
+        User user = userService.findById(userId);
+
         Address address = new Address();
         address.setUser(user);
         address.setFullName(request.getFullName());
@@ -54,14 +54,17 @@ public class AddressServiceImpl implements AddressService {
         address.setPostalCode(request.getPostalCode());
         address.setCountry(request.getCountry());
         address.setType(request.getType());
+        address.setIsDefault(request.getIsDefault());
 
-        if (request.getIsDefault() || addressRepository.countByUserId(user.getId()) == 0) {
-            addressRepository.clearDefaultAddress(user.getId());
-            address.setIsDefault(true);
+        if (request.getIsDefault()) {
+            addressRepository.findByUserIdOrderByIsDefaultDescCreatedAtDesc(userId).forEach(a -> {
+                a.setIsDefault(false);
+                addressRepository.save(a);
+            });
         }
 
         address = addressRepository.save(address);
-        logger.info("Created address for user: {}", user.getEmail());
+        logger.info("Created address {} for user {}", address.getId(), userId);
         return AddressResponse.fromEntity(address);
     }
 
@@ -81,26 +84,19 @@ public class AddressServiceImpl implements AddressService {
         address.setCountry(request.getCountry());
         address.setType(request.getType());
 
-        if (request.getIsDefault()) {
-            addressRepository.clearDefaultAddress(userId);
-            address.setIsDefault(true);
-        }
-
         address = addressRepository.save(address);
-        logger.info("Updated address: {}", addressId);
+        logger.info("Updated address {} for user {}", addressId, userId);
         return AddressResponse.fromEntity(address);
     }
 
     @Override
     @Transactional
     public void setDefaultAddress(Long addressId, Long userId) {
-        Address address = addressRepository.findByIdAndUserId(addressId, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
-
-        addressRepository.clearDefaultAddress(userId);
-        address.setIsDefault(true);
-        addressRepository.save(address);
-        logger.info("Set default address: {}", addressId);
+        addressRepository.findByUserIdOrderByIsDefaultDescCreatedAtDesc(userId).forEach(a -> {
+            a.setIsDefault(a.getId().equals(addressId));
+            addressRepository.save(a);
+        });
+        logger.info("Set default address {} for user {}", addressId, userId);
     }
 
     @Override
@@ -108,8 +104,7 @@ public class AddressServiceImpl implements AddressService {
     public void deleteAddress(Long addressId, Long userId) {
         Address address = addressRepository.findByIdAndUserId(addressId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
-
         addressRepository.delete(address);
-        logger.info("Deleted address: {}", addressId);
+        logger.info("Deleted address {} for user {}", addressId, userId);
     }
 }

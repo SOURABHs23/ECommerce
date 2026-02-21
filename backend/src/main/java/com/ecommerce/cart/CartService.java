@@ -1,17 +1,13 @@
 package com.ecommerce.cart;
 
-import com.ecommerce.cart.CartItemRequest;
-import com.ecommerce.cart.CartResponse;
-import com.ecommerce.user.User;
-
 public interface CartService {
-    CartResponse getCart(User user);
+    CartResponse getCart(Long userId);
 
-    CartResponse addToCart(CartItemRequest request, User user);
+    CartResponse addToCart(CartItemRequest request, Long userId);
 
-    CartResponse updateCartItem(Long itemId, Integer quantity, User user);
+    CartResponse updateCartItem(Long itemId, Integer quantity, Long userId);
 
-    CartResponse removeFromCart(Long itemId, User user);
+    CartResponse removeFromCart(Long itemId, Long userId);
 
-    void clearCart(User user);
+    void clearCart(Long userId);
 }

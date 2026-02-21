@@ -1,9 +1,6 @@
 package com.ecommerce.cart;
 
-import com.ecommerce.cart.CartItemRequest;
-import com.ecommerce.cart.CartResponse;
 import com.ecommerce.user.User;
-import com.ecommerce.cart.CartService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,14 +18,14 @@ public class CartController {
 
     @GetMapping
     public ResponseEntity<CartResponse> getCart(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(cartService.getCart(user));
+        return ResponseEntity.ok(cartService.getCart(user.getId()));
     }
 
     @PostMapping("/items")
     public ResponseEntity<CartResponse> addToCart(
             @Valid @RequestBody CartItemRequest itemRequest,
             @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(cartService.addToCart(itemRequest, user));
+        return ResponseEntity.ok(cartService.addToCart(itemRequest, user.getId()));
     }
 
     @PutMapping("/items/{itemId}")
@@ -36,19 +33,19 @@ public class CartController {
             @PathVariable Long itemId,
             @RequestParam Integer quantity,
             @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(cartService.updateCartItem(itemId, quantity, user));
+        return ResponseEntity.ok(cartService.updateCartItem(itemId, quantity, user.getId()));
     }
 
     @DeleteMapping("/items/{itemId}")
     public ResponseEntity<CartResponse> removeFromCart(
             @PathVariable Long itemId,
             @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(cartService.removeFromCart(itemId, user));
+        return ResponseEntity.ok(cartService.removeFromCart(itemId, user.getId()));
     }
 
     @DeleteMapping
     public ResponseEntity<Void> clearCart(@AuthenticationPrincipal User user) {
-        cartService.clearCart(user);
+        cartService.clearCart(user.getId());
         return ResponseEntity.noContent().build();
     }
 }

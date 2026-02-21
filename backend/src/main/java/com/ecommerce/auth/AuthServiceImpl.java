@@ -1,13 +1,9 @@
 package com.ecommerce.auth;
 
-import com.ecommerce.auth.SignInRequest;
-import com.ecommerce.auth.SignUpRequest;
-import com.ecommerce.auth.AuthResponse;
-import com.ecommerce.user.User;
 import com.ecommerce.common.exception.BadRequestException;
-import com.ecommerce.user.UserRepository;
 import com.ecommerce.common.security.JwtTokenProvider;
-import com.ecommerce.auth.AuthService;
+import com.ecommerce.user.User;
+import com.ecommerce.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,21 +14,21 @@ public class AuthServiceImpl implements AuthService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
+    public AuthServiceImpl(UserService userService, PasswordEncoder passwordEncoder,
             JwtTokenProvider jwtTokenProvider) {
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public AuthResponse signup(SignUpRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("User already there with this emailID");
+        if (userService.existsByEmail(request.getEmail())) {
+            throw new BadRequestException("Email already exists");
         }
 
         User user = new User();
@@ -41,31 +37,32 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setMobile(request.getMobile());
-        user.setVerifyEmail(false);
-        user.setVerifyMobile(false);
+        user.setRole("ROLE_USER");
+        user = userService.save(user);
 
-        userRepository.save(user);
+        String token = jwtTokenProvider.generateToken(
+                String.valueOf(user.getId()), user.getEmail(), user.getRole());
+        user.setSessionToken(token);
+        userService.save(user);
 
-        logger.info("New user registered: {}", request.getEmail());
-        return new AuthResponse(true, "Signup successfully", null);
+        logger.info("User signed up: {}", user.getEmail());
+        return new AuthResponse(true, "Signup successful", token);
     }
 
     @Override
     public AuthResponse signin(SignInRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BadRequestException("User not there with this emailID"));
+        User user = userService.findByEmail(request.getEmail());
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            logger.warn("Failed login attempt for user: {}", request.getEmail());
-            throw new BadRequestException("Password and email not matching");
+            throw new BadRequestException("Invalid credentials");
         }
 
-        String token = jwtTokenProvider.generateToken(user.getId().toString(), user.getEmail(), user.getRole());
-
+        String token = jwtTokenProvider.generateToken(
+                String.valueOf(user.getId()), user.getEmail(), user.getRole());
         user.setSessionToken(token);
-        userRepository.save(user);
+        userService.save(user);
 
-        logger.info("User logged in: {}", request.getEmail());
-        return new AuthResponse(true, "User logged in", token);
+        logger.info("User signed in: {}", user.getEmail());
+        return new AuthResponse(true, "Signin successful", token);
     }
 }

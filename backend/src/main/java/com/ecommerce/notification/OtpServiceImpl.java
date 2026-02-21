@@ -1,12 +1,8 @@
 package com.ecommerce.notification;
 
-import com.ecommerce.notification.Otp;
-import com.ecommerce.user.User;
 import com.ecommerce.common.exception.BadRequestException;
-import com.ecommerce.notification.OtpRepository;
-import com.ecommerce.user.UserRepository;
-import com.ecommerce.notification.OtpService;
-import com.ecommerce.notification.SmsService;
+import com.ecommerce.user.User;
+import com.ecommerce.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,15 +19,15 @@ public class OtpServiceImpl implements OtpService {
     private static final SecureRandom secureRandom = new SecureRandom();
 
     private final OtpRepository otpRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final SmsService smsService;
 
     @Value("${otp.expiration.seconds}")
     private int otpExpirationSeconds;
 
-    public OtpServiceImpl(OtpRepository otpRepository, UserRepository userRepository, SmsService smsService) {
+    public OtpServiceImpl(OtpRepository otpRepository, UserService userService, SmsService smsService) {
         this.otpRepository = otpRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.smsService = smsService;
     }
 
@@ -45,7 +41,7 @@ public class OtpServiceImpl implements OtpService {
         Integer otpValue = generateOtp();
 
         if (mobiles == null || mobiles.isEmpty()) {
-            User user = userRepository.findBySessionToken(jwt)
+            User user = userService.findBySessionToken(jwt)
                     .orElseThrow(() -> new BadRequestException("User not found"));
             mobiles = List.of(user.getMobile());
         }
@@ -75,10 +71,10 @@ public class OtpServiceImpl implements OtpService {
             throw new BadRequestException("OTP not matched");
         }
 
-        User user = userRepository.findBySessionToken(jwt)
+        User user = userService.findBySessionToken(jwt)
                 .orElseThrow(() -> new BadRequestException("User not found"));
         user.setVerifyMobile(true);
-        userRepository.save(user);
+        userService.save(user);
 
         otpRepository.deleteByJwt(jwt);
 
