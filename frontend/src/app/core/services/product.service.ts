@@ -67,4 +67,8 @@ export class ProductService {
     deleteProduct(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
+
+    getFeaturedProducts(): Observable<Product[]> {
+        return this.http.get<Product[]>(`${this.apiUrl}/featured`);
+    }
 }

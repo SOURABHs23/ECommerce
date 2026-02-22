@@ -1,0 +1,129 @@
+<section class="hero">
+    <div class="hero-content">
+        @if (welcomeMessage) {
+        <h1 class="hero-title">{{ welcomeMessage }} 👋</h1>
+        <p class="hero-subtitle">What would you like to shop today?</p>
+        } @else {
+        <h1 class="hero-title">Welcome to <span class="brand">ShopHub</span></h1>
+        <p class="hero-subtitle">Discover quality products at unbeatable prices</p>
+        }
+        <div class="hero-actions">
+            <a routerLink="/products" class="btn-primary">Shop Now →</a>
+        </div>
+    </div>
+</section>
+
+<!-- Categories -->
+@if (categories.length > 0) {
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-label">Categories</div>
+            <h2>Shop by Category</h2>
+        </div>
+        <div class="categories-grid">
+            @for (category of categories; track category.id) {
+            <a [routerLink]="['/products']" [queryParams]="{category: category.id}" class="category-card">
+                <div class="category-card-inner">
+                    <div class="category-icon-wrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                    </div>
+                    <div class="category-text">
+                        <h3>{{ category.name }}</h3>
+                        <span class="category-count">{{ category.productCount }} items</span>
+                    </div>
+                    <svg class="category-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </div>
+            </a>
+            }
+        </div>
+    </div>
+</section>
+}
+
+<!-- Featured Products -->
+@if (loading) {
+<section class="section">
+    <div class="container">
+        <div class="loading-state">
+            <div class="loader"></div>
+        </div>
+    </div>
+</section>
+}
+
+@if (!loading && featuredProducts.length > 0) {
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-label">Curated</div>
+            <h2>Featured Products</h2>
+            <a routerLink="/products" class="view-all-link">View all products →</a>
+        </div>
+        <div class="products-grid">
+            @for (product of featuredProducts; track product.id) {
+            <a [routerLink]="['/products', product.id]" class="product-card">
+                <div class="product-image-wrap">
+                    <img [src]="getProductImage(product)" [alt]="product.name" loading="lazy">
+                    @if (!product.inStock) {
+                    <div class="product-badge sold-out">Sold Out</div>
+                    }
+                </div>
+                <div class="product-body">
+                    <span class="product-cat">{{ product.categoryName }}</span>
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <div class="product-footer">
+                        <span class="product-price">₹{{ product.price | number:'1.0-0' }}</span>
+                        <span class="product-cta">View →</span>
+                    </div>
+                </div>
+            </a>
+            }
+        </div>
+    </div>
+</section>
+}
+
+<!-- Trust Signals -->
+<section class="trust-section">
+    <div class="container">
+        <div class="trust-grid">
+            <div class="trust-item">
+                <div class="trust-icon">🚚</div>
+                <div>
+                    <h4>Free Shipping</h4>
+                    <p>On orders above ₹499</p>
+                </div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon">🔒</div>
+                <div>
+                    <h4>Secure Checkout</h4>
+                    <p>100% encrypted payments</p>
+                </div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon">↩️</div>
+                <div>
+                    <h4>Easy Returns</h4>
+                    <p>30-day hassle-free</p>
+                </div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon">💬</div>
+                <div>
+                    <h4>24/7 Support</h4>
+                    <p>Always here to help</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

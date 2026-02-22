@@ -29,8 +29,8 @@ export const routes: Routes = [
     {
         path: '',
         canActivate: [homeRedirectGuard],
-        loadComponent: () => import('./features/products/product-list/product-list.component')
-            .then(m => m.ProductListComponent),
+        loadComponent: () => import('./features/home/home.component')
+            .then(m => m.HomeComponent),
         title: 'ShopHub - Home'
     },
     {
@@ -77,6 +77,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/orders/orders.component')
             .then(m => m.OrdersComponent),
         title: 'My Orders - ShopHub'
+    },
+    {
+        path: 'home',
+        redirectTo: '',
+        pathMatch: 'full'
     },
     {
         path: '**',
