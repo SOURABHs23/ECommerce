@@ -1,7 +1,7 @@
 package com.ecommerce.common.security;
 
-import com.ecommerce.user.User;
-import com.ecommerce.user.UserService;
+import com.ecommerce.user.model.User;
+import com.ecommerce.user.service.UserService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
