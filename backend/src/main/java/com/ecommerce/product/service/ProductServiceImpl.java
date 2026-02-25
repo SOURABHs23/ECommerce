@@ -9,8 +9,6 @@ import com.ecommerce.common.exception.BadRequestException;
 import com.ecommerce.common.exception.ResourceNotFoundException;
 import com.ecommerce.category.repository.CategoryRepository;
 import com.ecommerce.product.repository.ProductRepository;
-import com.ecommerce.product.service.ImageService;
-import com.ecommerce.product.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;

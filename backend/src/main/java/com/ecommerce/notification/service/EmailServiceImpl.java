@@ -1,8 +1,6 @@
 package com.ecommerce.notification.service;
 
 import com.ecommerce.order.dto.OrderResponse;
-import com.ecommerce.notification.service.OrderEmailComposer;
-import com.ecommerce.notification.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;

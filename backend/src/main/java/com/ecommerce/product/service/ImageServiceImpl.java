@@ -1,6 +1,5 @@
 package com.ecommerce.product.service;
 
-import com.ecommerce.product.service.ImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

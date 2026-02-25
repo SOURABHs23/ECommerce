@@ -1,6 +1,5 @@
 package com.ecommerce.notification.service;
 
-import com.ecommerce.notification.service.SmsService;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;

@@ -1,8 +1,6 @@
 package com.ecommerce.address.dto;
 
 import com.ecommerce.address.model.Address;
-
-import com.ecommerce.address.model.Address;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

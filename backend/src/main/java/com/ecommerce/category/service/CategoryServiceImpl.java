@@ -6,7 +6,6 @@ import com.ecommerce.category.model.Category;
 import com.ecommerce.common.exception.BadRequestException;
 import com.ecommerce.common.exception.ResourceNotFoundException;
 import com.ecommerce.category.repository.CategoryRepository;
-import com.ecommerce.category.service.CategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
