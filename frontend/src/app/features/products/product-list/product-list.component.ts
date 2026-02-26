@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ProductService, CartService, CategoryService } from '../../../core/services';
+import { Router } from '@angular/router';
+import { ProductService, CartService, CategoryService, AuthService } from '../../../core/services';
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card.component';
 import { Product, Category, PageResponse } from '../../../core/models';
 
@@ -37,6 +38,8 @@ export class ProductListComponent implements OnInit {
   private productService = inject(ProductService);
   private cartService = inject(CartService);
   private categoryService = inject(CategoryService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   products = signal<Product[]>([]);
   categories = signal<Category[]>([]);
@@ -137,6 +140,10 @@ export class ProductListComponent implements OnInit {
   }
 
   onAddToCart(product: Product): void {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/products' } });
+      return;
+    }
     this.cartService.addToCart({ productId: product.id, quantity: 1 }).subscribe();
   }
 }
