@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
-import { AuthService } from '../../../core/services';
+import { AuthService, CartService } from '../../../core/services';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,6 +27,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private cartService = inject(CartService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -59,6 +60,7 @@ export class LoginComponent {
           if (this.authService.isAdmin()) {
             this.router.navigate(['/admin']);
           } else {
+            this.cartService.refreshCart();
             const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
             this.router.navigate([returnUrl]);
           }

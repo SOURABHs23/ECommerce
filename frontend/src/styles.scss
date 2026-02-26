@@ -130,3 +130,57 @@ body {
 /* Import Material Icons */
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* =========================================
+   Snackbar Styles (Cart Notifications)
+   ========================================= */
+
+// Success snackbar
+.cart-snackbar {
+    .mdc-snackbar__surface {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35) !important;
+    }
+
+    .mdc-snackbar__label {
+        color: #fff !important;
+        font-weight: 500;
+        font-size: 0.95rem;
+        letter-spacing: 0.2px;
+    }
+
+    .mat-mdc-snack-bar-action {
+        color: #d1fae5 !important;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+
+        &:hover {
+            color: #fff !important;
+        }
+    }
+}
+
+// Error snackbar
+.cart-snackbar-error {
+    .mdc-snackbar__surface {
+        background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35) !important;
+    }
+
+    .mdc-snackbar__label {
+        color: #fff !important;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .mat-mdc-snack-bar-action {
+        color: #fecaca !important;
+        font-weight: 600;
+
+        &:hover {
+            color: #fff !important;
+        }
+    }
+}

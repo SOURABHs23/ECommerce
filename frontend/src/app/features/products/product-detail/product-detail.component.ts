@@ -3,11 +3,12 @@ import { CurrencyPipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService, CartService, AuthService } from '../../../core/services';
 import { Product } from '../../../core/models';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, MatSnackBarModule],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
@@ -17,6 +18,7 @@ export class ProductDetailComponent implements OnInit {
   private productService = inject(ProductService);
   private cartService = inject(CartService);
   authService = inject(AuthService);
+  private snackBar = inject(MatSnackBar);
 
   product = signal<Product | null>(null);
   loading = signal(true);
@@ -73,8 +75,26 @@ export class ProductDetailComponent implements OnInit {
       productId: this.product()!.id,
       quantity: this.quantity()
     }).subscribe({
-      next: () => this.addingToCart.set(false),
-      error: () => this.addingToCart.set(false)
+      next: () => {
+        this.addingToCart.set(false);
+        this.snackBar.open(`✓ ${this.product()!.name} added to cart`, 'View Cart', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'bottom',
+          panelClass: ['cart-snackbar']
+        }).onAction().subscribe(() => {
+          this.router.navigate(['/cart']);
+        });
+      },
+      error: () => {
+        this.addingToCart.set(false);
+        this.snackBar.open('Failed to add product to cart', 'Dismiss', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'bottom',
+          panelClass: ['cart-snackbar-error']
+        });
+      }
     });
   }
 

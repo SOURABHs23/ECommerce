@@ -14,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-product-list',
@@ -29,7 +30,8 @@ import { MatChipsModule } from '@angular/material/chips';
     MatProgressSpinnerModule,
     MatListModule,
     MatDividerModule,
-    MatChipsModule
+    MatChipsModule,
+    MatSnackBarModule
   ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
@@ -40,6 +42,7 @@ export class ProductListComponent implements OnInit {
   private categoryService = inject(CategoryService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
 
   products = signal<Product[]>([]);
   categories = signal<Category[]>([]);
@@ -144,6 +147,25 @@ export class ProductListComponent implements OnInit {
       this.router.navigate(['/login'], { queryParams: { returnUrl: '/products' } });
       return;
     }
-    this.cartService.addToCart({ productId: product.id, quantity: 1 }).subscribe();
+    this.cartService.addToCart({ productId: product.id, quantity: 1 }).subscribe({
+      next: () => {
+        this.snackBar.open(`✓ ${product.name} added to cart`, 'View Cart', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'bottom',
+          panelClass: ['cart-snackbar']
+        }).onAction().subscribe(() => {
+          this.router.navigate(['/cart']);
+        });
+      },
+      error: () => {
+        this.snackBar.open('Failed to add product to cart', 'Dismiss', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'bottom',
+          panelClass: ['cart-snackbar-error']
+        });
+      }
+    });
   }
 }

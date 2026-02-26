@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/services';
+import { AuthService, CartService } from '../../../core/services';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,6 +27,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class RegisterComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private cartService = inject(CartService);
   private router = inject(Router);
 
   registerForm: FormGroup = this.fb.group({
@@ -63,6 +64,7 @@ export class RegisterComponent {
       next: (response) => {
         this.loading = false;
         if (response.success) {
+          this.cartService.refreshCart();
           this.router.navigate(['/']);
         } else {
           this.errorMessage = response.message || 'Registration failed';
