@@ -44,10 +44,7 @@ public class AuthServiceImpl implements AuthService {
         user.setRole("ROLE_USER");
         user = userService.save(user);
 
-        String token = jwtTokenProvider.generateToken(
-                String.valueOf(user.getId()), user.getEmail(), user.getRole());
-        user.setSessionToken(token);
-        userService.save(user);
+        String token = generateAndSaveToken(user);
 
         logger.info("User signed up: {}", user.getEmail());
         return new AuthResponse(true, "Signup successful", token);
@@ -61,12 +58,17 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Invalid credentials");
         }
 
+        String token = generateAndSaveToken(user);
+
+        logger.info("User signed in: {}", user.getEmail());
+        return new AuthResponse(true, "Signin successful", token);
+    }
+
+    private String generateAndSaveToken(User user) {
         String token = jwtTokenProvider.generateToken(
                 String.valueOf(user.getId()), user.getEmail(), user.getRole());
         user.setSessionToken(token);
         userService.save(user);
-
-        logger.info("User signed in: {}", user.getEmail());
-        return new AuthResponse(true, "Signin successful", token);
+        return token;
     }
 }
