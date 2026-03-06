@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductService {
-    Page<ProductResponse> getAllProducts(Pageable pageable);
+    Page<ProductResponse>  getAllProducts(Pageable pageable);
 
     Page<ProductResponse> getProductsByCategory(Long categoryId, Pageable pageable);
 
