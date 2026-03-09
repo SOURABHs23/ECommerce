@@ -4,6 +4,7 @@ import com.ecommerce.product.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -37,4 +38,19 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                         Pageable pageable);
 
         boolean existsBySku(String sku);
+
+        /**
+         * Atomically decrement stock. Returns 1 if successful, 0 if insufficient stock.
+         * This eliminates the race condition where concurrent orders can oversell.
+         */
+        @Modifying
+        @Query("UPDATE Product p SET p.stock = p.stock - :quantity WHERE p.id = :productId AND p.stock >= :quantity")
+        int decrementStock(@Param("productId") Long productId, @Param("quantity") int quantity);
+
+        /**
+         * Atomically restore stock when an order is cancelled.
+         */
+        @Modifying
+        @Query("UPDATE Product p SET p.stock = p.stock + :quantity WHERE p.id = :productId")
+        int restoreStock(@Param("productId") Long productId, @Param("quantity") int quantity);
 }

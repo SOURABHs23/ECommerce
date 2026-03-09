@@ -84,7 +84,9 @@ public class OrderServiceImpl implements OrderService {
         for (CartItem cartItem : cart.getItems()) {
             Product product = cartItem.getProduct();
 
-            if (product.getStock() < cartItem.getQuantity()) {
+            // Atomic stock decrement — eliminates race condition
+            int updated = productRepository.decrementStock(product.getId(), cartItem.getQuantity());
+            if (updated == 0) {
                 throw new BadRequestException("Insufficient stock for: " + product.getName());
             }
 
@@ -100,9 +102,6 @@ public class OrderServiceImpl implements OrderService {
 
             order.addItem(orderItem);
             subtotal = subtotal.add(orderItem.getSubtotal());
-
-            product.setStock(product.getStock() - cartItem.getQuantity());
-            productRepository.save(product);
         }
 
         order.setSubtotal(subtotal);
@@ -149,9 +148,7 @@ public class OrderServiceImpl implements OrderService {
 
         for (OrderItem item : order.getItems()) {
             if (item.getProduct() != null) {
-                Product product = item.getProduct();
-                product.setStock(product.getStock() + item.getQuantity());
-                productRepository.save(product);
+                productRepository.restoreStock(item.getProduct().getId(), item.getQuantity());
             }
         }
 

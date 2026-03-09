@@ -22,7 +22,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "orders")
+@Table(name = "orders", indexes = {
+        @Index(name = "idx_order_user_created", columnList = "user_id, created_at"),
+        @Index(name = "idx_order_number", columnList = "order_number")
+})
 @EntityListeners(AuditingEntityListener.class)
 public class Order {
 

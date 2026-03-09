@@ -17,7 +17,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "cart_items")
+@Table(name = "cart_items", indexes = {
+        @Index(name = "idx_cart_item_cart_product", columnList = "cart_id, product_id", unique = true)
+})
 @EntityListeners(AuditingEntityListener.class)
 public class CartItem {
 

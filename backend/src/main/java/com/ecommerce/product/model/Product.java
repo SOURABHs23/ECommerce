@@ -20,7 +20,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "products")
+@Table(name = "products", indexes = {
+        @Index(name = "idx_product_active", columnList = "active"),
+        @Index(name = "idx_product_category_active", columnList = "category_id, active"),
+        @Index(name = "idx_product_featured_active", columnList = "featured, active")
+})
 @EntityListeners(AuditingEntityListener.class)
 public class Product {
 
