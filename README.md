@@ -1,6 +1,6 @@
 # 🛒 ShopHub — E-Commerce Application
 
-A full-stack E-Commerce application built with **Angular 18** and **Spring Boot 3**, featuring a modern storefront, role-based access, and a complete order lifecycle.
+A full-stack E-Commerce application built with **Angular 18** and **Spring Boot 3**, featuring a modern storefront, role-based access, concurrency-safe inventory management, and a complete order lifecycle.
 
 ---
 
@@ -31,6 +31,8 @@ A full-stack E-Commerce application built with **Angular 18** and **Spring Boot 
 *   **Order Management** — View all orders and update order statuses
 
 ### Cross-Cutting Concerns
+*   **Atomic Stock Management** — Race-condition-free inventory via JPQL `@Modifying` queries (`decrementStock` / `restoreStock`) — no concurrent overselling
+*   **Database Indexing** — Composite indexes on high-traffic query paths (product active/category, order user/date, cart item uniqueness) for optimized performance
 *   **Email Notifications** — Order confirmation emails via Gmail SMTP with HTML templates (`OrderEmailComposer`)
 *   **SMS Notifications** — OTP delivery via Twilio
 *   **Global Exception Handling** — Structured error responses via `GlobalExceptionHandler` for `ResourceNotFoundException`, `BadRequestException`, and validation errors
@@ -50,13 +52,13 @@ A full-stack E-Commerce application built with **Angular 18** and **Spring Boot 
 | Language         | Java 21                           |
 | Database         | PostgreSQL                        |
 | ORM              | Spring Data JPA / Hibernate       |
-| Security         | Spring Security + JWT (jjwt 0.12) |
+| Security         | Spring Security + JWT (jjwt 0.12.3) |
 | Validation       | Spring Boot Starter Validation    |
 | Email            | Spring Boot Starter Mail          |
-| SMS              | Twilio SDK 9.14                   |
+| SMS              | Twilio SDK 9.14.1                 |
 | Scheduling       | Spring `@Scheduled` (OTP cleanup) |
 | Auditing         | JPA `@EntityListeners` + `@CreatedDate` / `@LastModifiedDate` |
-| Boilerplate      | Lombok 1.18                       |
+| Boilerplate      | Lombok 1.18.42                    |
 | Build Tool       | Maven                             |
 
 ### Frontend
@@ -107,8 +109,8 @@ ECommerce/
 │   │   │   ├── ProductController         #   /api/products (CRUD, search, filter, featured)
 │   │   │   ├── ProductService + Impl     #   Business logic
 │   │   │   ├── ImageService + Impl       #   Product image management
-│   │   │   ├── Product, ProductImage     #   JPA entities
-│   │   │   ├── ProductRepository         #   Data access
+│   │   │   ├── Product, ProductImage     #   JPA entities (with composite indexes)
+│   │   │   ├── ProductRepository         #   Data access + atomic stock operations
 │   │   │   └── ProductRequest, ProductResponse
 │   │   │
 │   │   ├── category/                     # ── 📂 Category Domain ──
@@ -121,22 +123,22 @@ ECommerce/
 │   │   ├── cart/                         # ── 🛒 Cart Domain ──
 │   │   │   ├── CartController            #   /api/cart (add, update, remove, clear)
 │   │   │   ├── CartService + Impl        #   Cascade-based item management
-│   │   │   ├── Cart, CartItem            #   JPA entities (OneToMany cascade)
+│   │   │   ├── Cart, CartItem            #   JPA entities (OneToMany cascade, unique constraint)
 │   │   │   ├── CartRepository            #   JPQL fetch join for eager loading
 │   │   │   ├── CartItemRepository        #   Item-level queries
 │   │   │   └── CartItemRequest, CartResponse
 │   │   │
 │   │   ├── order/                        # ── 📋 Order Domain ──
 │   │   │   ├── OrderController           #   /api/orders (create, list, cancel, status)
-│   │   │   ├── OrderService + Impl       #   Cart→Order conversion, email triggers
+│   │   │   ├── OrderService + Impl       #   Cart→Order conversion, atomic stock, email triggers
 │   │   │   ├── Order, OrderItem, OrderStatus
-│   │   │   ├── OrderRepository           #   Data access
+│   │   │   ├── OrderRepository           #   Data access (with composite indexes)
 │   │   │   └── OrderRequest, OrderResponse
 │   │   │
 │   │   ├── address/                      # ── 📍 Address Domain ──
 │   │   │   ├── AddressController         #   /api/addresses
 │   │   │   ├── AddressService + Impl     #   CRUD + default address management
-│   │   │   ├── Address                   #   JPA entity
+│   │   │   ├── Address                   #   JPA entity (with user+default index)
 │   │   │   ├── AddressRepository         #   Data access
 │   │   │   └── AddressRequest, AddressResponse
 │   │   │
@@ -175,6 +177,8 @@ ECommerce/
 │   ├── src/styles.scss                   # Global theme: Material palette, snackbar styles, component overrides
 │   └── package.json
 │
+├── database_design.md                    # Full database schema documentation with ER diagram
+├── db_review.md                          # Senior architect database design review
 └── ECommerce_API.postman_collection.json # Postman collection for all API endpoints
 ```
 
@@ -196,6 +200,28 @@ The backend is organized by **business domain** (vertical slicing), not by techn
 | `order/` | Cart→Order conversion, tracking, cancellation | `/api/orders` |
 | `address/` | Shipping address book with default management | `/api/addresses` |
 | `notification/` | Email (order confirmation), SMS (Twilio), OTP verification | `/api/otp` |
+
+### Concurrency & Data Integrity
+
+| Concern | Implementation |
+|---|---|
+| **Stock Overselling** | Atomic `UPDATE ... WHERE stock >= :qty` via JPQL `@Modifying` — returns 0 if insufficient, no race condition |
+| **Stock Restoration** | Automatic `restoreStock()` on order cancellation reverses the decrement atomically |
+| **Cart Deduplication** | Unique composite constraint on `(cart_id, product_id)` prevents duplicate cart entries at the DB level |
+
+### Database Indexes
+
+Performance-critical queries are backed by composite indexes:
+
+| Index | Table | Columns | Query Optimized |
+|---|---|---|---|
+| `idx_product_active` | `products` | `active` | Product listing |
+| `idx_product_category_active` | `products` | `category_id, active` | Category browsing |
+| `idx_product_featured_active` | `products` | `featured, active` | Homepage featured |
+| `idx_order_user_created` | `orders` | `user_id, created_at` | Order history |
+| `idx_order_number` | `orders` | `order_number` | Order lookup |
+| `idx_address_user_default` | `addresses` | `user_id, is_default` | Checkout |
+| `idx_cart_item_cart_product` | `cart_items` | `cart_id, product_id` | Add to cart (unique) |
 
 ### SOLID Principles Applied
 
@@ -301,7 +327,7 @@ The backend is organized by **business domain** (vertical slicing), not by techn
 
 1.  **Signup** → User created → JWT generated → token stored in DB → token returned to client → auto-login
 2.  **Signin** → Credentials validated → new JWT generated → old session token replaced → token returned
-3.  **Every Request** → `JwtAuthenticationFilter` extracts token from `Authorization` header → validates → sets `SecurityContext`
+3.  **Every Request** → `JwtAuthenticationFilter` extracts token from `Authorization` header → validates → verifies session token in DB → sets `SecurityContext`
 4.  **Logout** → Token removed from localStorage → user redirected to login
 
 ### API Access Rules
@@ -312,9 +338,10 @@ The backend is organized by **business domain** (vertical slicing), not by techn
 | `GET /api/products/**` | Public                     |
 | `/api/products/**`   | Admin only (CUD operations)  |
 | `GET /api/categories/**` | Public                   |
-| `/api/cart/**`       | Authenticated users          |
-| `/api/orders/**`     | Authenticated users          |
-| `/api/addresses/**`  | Authenticated users          |
+| `/api/categories/**` | Admin only (CUD operations)  |
+| `/api/cart/**`       | Authenticated users (USER role) |
+| `/api/orders/**`     | Authenticated users (USER role) |
+| `/api/addresses/**`  | Authenticated users (USER role) |
 | `/api/otp/**`        | Authenticated users          |
 
 ---
@@ -331,6 +358,17 @@ Import this file into [Postman](https://www.postman.com/) to explore and test al
 
 ---
 
+## 📊 Database Design
+
+Full database schema documentation is available in [`database_design.md`](database_design.md), including:
+
+*   **ER Diagram** — Mermaid-based entity relationship diagram
+*   **10 Table Definitions** — `users`, `addresses`, `categories`, `products`, `product_images`, `carts`, `cart_items`, `orders`, `order_items`, `otps`
+*   **Relationship Summary** — All FK relationships with cascade behaviors
+*   **Key Design Decisions** — Price snapshots, self-referential categories, soft deletes, UUID order numbers, automatic auditing
+
+---
+
 ## 🧑‍💻 Development Notes
 
 *   **Domain-Driven Structure** — Each backend domain is a self-contained module with its own controller, service interface, implementation, entities, repositories, and DTOs. This enables clean microservice extraction when needed.
@@ -338,6 +376,7 @@ Import this file into [Postman](https://www.postman.com/) to explore and test al
 *   **DRY Token Generation** — `AuthServiceImpl` uses a private `generateAndSaveToken(User)` method shared by both `signup()` and `signin()`.
 *   **UserService Abstraction** — `UserRepository` is only accessed within the `user/` package. All other domains use the `UserService` interface, reducing coupling.
 *   **Long userId Pattern** — Service methods accept `Long userId` instead of the full `User` entity. Controllers extract the ID from `@AuthenticationPrincipal` and pass only the ID downstream.
+*   **Atomic Stock Operations** — `ProductRepository.decrementStock()` and `restoreStock()` use JPQL `@Modifying` queries to prevent race conditions during concurrent checkout and order cancellation.
 *   **Cart Cascade Pattern** — Cart items are managed via JPA's `CascadeType.ALL` + `orphanRemoval` through `cart.addItem()`, ensuring the in-memory entity stays in sync with the DB.
 *   **Standalone Components** — The Angular frontend uses standalone components with lazy-loaded routes (no NgModules).
 *   **Signal-Based State** — Cart count, authentication status, and UI state are all managed via Angular signals for fine-grained reactivity.
