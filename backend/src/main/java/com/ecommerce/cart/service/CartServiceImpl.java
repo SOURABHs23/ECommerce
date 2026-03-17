@@ -18,7 +18,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -41,7 +44,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartResponse getCart(Long userId) {
         return cartRepository.findByUserIdWithItems(userId)
-                .map(CartResponse::fromEntity)
+                .map(this::toResponse)
                 .orElse(new CartResponse());
     }
 
@@ -77,7 +80,7 @@ public class CartServiceImpl implements CartService {
         cart = cartRepository.save(cart);
 
         logger.info("Added product {} to cart for user {}", product.getName(), userId);
-        return CartResponse.fromEntity(cart);
+        return toResponse(cart);
     }
 
     @Override
@@ -101,7 +104,7 @@ public class CartServiceImpl implements CartService {
             cartItemRepository.save(item);
         }
 
-        return CartResponse.fromEntity(cartRepository.findByUserIdWithItems(userId).orElse(cart));
+        return toResponse(cartRepository.findByUserIdWithItems(userId).orElse(cart));
     }
 
     @Override
@@ -119,7 +122,7 @@ public class CartServiceImpl implements CartService {
         cart.getItems().remove(item);
 
         logger.info("Removed item {} from cart for user {}", itemId, userId);
-        return CartResponse.fromEntity(cart);
+        return toResponse(cart);
     }
 
     @Override
@@ -130,5 +133,46 @@ public class CartServiceImpl implements CartService {
             cartRepository.save(cart);
             logger.info("Cleared cart for user {}", userId);
         });
+    }
+
+    private CartResponse toResponse(Cart cart) {
+        if (cart.getItems() == null || cart.getItems().isEmpty()) {
+            return CartResponse.builder()
+                    .id(cart.getId())
+                    .items(Collections.emptyList())
+                    .totalItems(0)
+                    .totalAmount(BigDecimal.ZERO)
+                    .build();
+        }
+
+        return CartResponse.builder()
+                .id(cart.getId())
+                .items(cart.getItems().stream()
+                        .map(this::toCartItemResponse)
+                        .collect(Collectors.toList()))
+                .totalItems(cart.getItems().stream()
+                        .mapToInt(CartItem::getQuantity)
+                        .sum())
+                .totalAmount(cart.getItems().stream()
+                        .map(item -> item.getProduct().getPrice()
+                                .multiply(BigDecimal.valueOf(item.getQuantity())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add))
+                .build();
+    }
+
+    private CartResponse.CartItemResponse toCartItemResponse(CartItem item) {
+        return CartResponse.CartItemResponse.builder()
+                .id(item.getId())
+                .productId(item.getProduct().getId())
+                .productName(item.getProduct().getName())
+                .price(item.getProduct().getPrice())
+                .quantity(item.getQuantity())
+                .subtotal(item.getProduct().getPrice()
+                        .multiply(BigDecimal.valueOf(item.getQuantity())))
+                .inStock(item.getProduct().getStock() >= item.getQuantity())
+                .productImage(item.getProduct().getImages() != null && !item.getProduct().getImages().isEmpty()
+                        ? item.getProduct().getImages().get(0).getImageUrl()
+                        : null)
+                .build();
     }
 }

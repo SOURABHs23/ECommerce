@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,14 +29,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findByActiveTrue().stream()
-                .map(CategoryResponse::fromEntity)
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<CategoryResponse> getRootCategories() {
         return categoryRepository.findByParentCategoryIsNullAndActiveTrue().stream()
-                .map(CategoryResponse::fromEntityWithSubCategories)
+                .map(this::toResponseWithSubCategories)
                 .collect(Collectors.toList());
     }
 
@@ -43,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse getCategoryById(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
-        return CategoryResponse.fromEntityWithSubCategories(category);
+        return toResponseWithSubCategories(category);
     }
 
     @Override
@@ -66,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         category = categoryRepository.save(category);
         logger.info("Created category: {}", category.getName());
-        return CategoryResponse.fromEntity(category);
+        return toResponse(category);
     }
 
     @Override
@@ -92,7 +93,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         category = categoryRepository.save(category);
         logger.info("Updated category: {}", category.getName());
-        return CategoryResponse.fromEntity(category);
+        return toResponse(category);
     }
 
     @Override
@@ -104,5 +105,41 @@ public class CategoryServiceImpl implements CategoryService {
         category.setActive(false);
         categoryRepository.save(category);
         logger.info("Deleted category: {}", category.getName());
+    }
+
+    private CategoryResponse toResponse(Category category) {
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .description(category.getDescription())
+                .imageUrl(category.getImageUrl())
+                .parentCategoryId(category.getParentCategory() != null
+                        ? category.getParentCategory().getId() : null)
+                .parentCategoryName(category.getParentCategory() != null
+                        ? category.getParentCategory().getName() : null)
+                .productCount(category.getProducts() != null
+                        ? category.getProducts().size() : 0)
+                .build();
+    }
+
+    private CategoryResponse toResponseWithSubCategories(Category category) {
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .description(category.getDescription())
+                .imageUrl(category.getImageUrl())
+                .parentCategoryId(category.getParentCategory() != null
+                        ? category.getParentCategory().getId() : null)
+                .parentCategoryName(category.getParentCategory() != null
+                        ? category.getParentCategory().getName() : null)
+                .productCount(category.getProducts() != null
+                        ? category.getProducts().size() : 0)
+                .subCategories(category.getSubCategories() != null && !category.getSubCategories().isEmpty()
+                        ? category.getSubCategories().stream()
+                                .filter(Category::getActive)
+                                .map(this::toResponse)
+                                .collect(Collectors.toList())
+                        : Collections.emptyList())
+                .build();
     }
 }

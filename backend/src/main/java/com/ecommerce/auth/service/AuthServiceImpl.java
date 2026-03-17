@@ -47,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
         String token = generateAndSaveToken(user);
 
         logger.info("User signed up: {}", user.getEmail());
-        return new AuthResponse(true, "Signup successful", token);
+        return AuthResponse.builder().success(true).message("Signup successful").token(token).build();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
         String token = generateAndSaveToken(user);
 
         logger.info("User signed in: {}", user.getEmail());
-        return new AuthResponse(true, "Signin successful", token);
+        return AuthResponse.builder().success(true).message("Signin successful").token(token).build();
     }
 
     private String generateAndSaveToken(User user) {

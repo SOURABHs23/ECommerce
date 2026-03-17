@@ -2,10 +2,12 @@ package com.ecommerce.address.dto;
 
 import com.ecommerce.address.model.Address;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressResponse {
@@ -21,20 +23,4 @@ public class AddressResponse {
     private String country;
     private Address.AddressType type;
     private Boolean isDefault;
-
-    public static AddressResponse fromEntity(Address address) {
-        AddressResponse response = new AddressResponse();
-        response.setId(address.getId());
-        response.setFullName(address.getFullName());
-        response.setPhone(address.getPhone());
-        response.setAddressLine1(address.getAddressLine1());
-        response.setAddressLine2(address.getAddressLine2());
-        response.setCity(address.getCity());
-        response.setState(address.getState());
-        response.setPostalCode(address.getPostalCode());
-        response.setCountry(address.getCountry());
-        response.setType(address.getType());
-        response.setIsDefault(address.getIsDefault());
-        return response;
-    }
 }

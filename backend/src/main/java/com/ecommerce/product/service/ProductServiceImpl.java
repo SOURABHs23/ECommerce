@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,32 +40,32 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<ProductResponse> getAllProducts(Pageable pageable) {
         return productRepository.findByActiveTrue(pageable)
-                .map(ProductResponse::fromEntity);
+                .map(this::toResponse);
     }
 
     @Override
     public Page<ProductResponse> getProductsByCategory(Long categoryId, Pageable pageable) {
         return productRepository.findByCategoryIdAndActiveTrue(categoryId, pageable)
-                .map(ProductResponse::fromEntity);
+                .map(this::toResponse);
     }
 
     @Override
     public Page<ProductResponse> searchProducts(String query, Pageable pageable) {
         return productRepository.searchProducts(query, pageable)
-                .map(ProductResponse::fromEntity);
+                .map(this::toResponse);
     }
 
     @Override
     public Page<ProductResponse> filterProducts(Long categoryId, BigDecimal minPrice,
             BigDecimal maxPrice, Pageable pageable) {
         return productRepository.findByFilters(categoryId, minPrice, maxPrice, pageable)
-                .map(ProductResponse::fromEntity);
+                .map(this::toResponse);
     }
 
     @Override
     public List<ProductResponse> getFeaturedProducts() {
         return productRepository.findByFeaturedTrueAndActiveTrue().stream()
-                .map(ProductResponse::fromEntity)
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -77,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
             throw new ResourceNotFoundException("Product not found with id: " + id);
         }
 
-        return ProductResponse.fromEntity(product);
+        return toResponse(product);
     }
 
     @Override
@@ -117,7 +118,7 @@ public class ProductServiceImpl implements ProductService {
 
         product = productRepository.save(product);
         logger.info("Created product: {} with id: {}", product.getName(), product.getId());
-        return ProductResponse.fromEntity(product);
+        return toResponse(product);
     }
 
     @Override
@@ -152,7 +153,7 @@ public class ProductServiceImpl implements ProductService {
 
         product = productRepository.save(product);
         logger.info("Updated product: {}", product.getName());
-        return ProductResponse.fromEntity(product);
+        return toResponse(product);
     }
 
     @Override
@@ -175,6 +176,27 @@ public class ProductServiceImpl implements ProductService {
         product.setStock(quantity);
         product = productRepository.save(product);
         logger.info("Updated stock for product {}: {}", product.getName(), quantity);
-        return ProductResponse.fromEntity(product);
+        return toResponse(product);
+    }
+
+    private ProductResponse toResponse(Product product) {
+        return ProductResponse.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .stock(product.getStock())
+                .sku(product.getSku())
+                .brand(product.getBrand())
+                .featured(product.getFeatured())
+                .inStock(product.getStock() > 0)
+                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
+                .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
+                .images(product.getImages() != null
+                        ? product.getImages().stream()
+                                .map(ProductImage::getImageUrl)
+                                .collect(Collectors.toList())
+                        : Collections.emptyList())
+                .build();
     }
 }

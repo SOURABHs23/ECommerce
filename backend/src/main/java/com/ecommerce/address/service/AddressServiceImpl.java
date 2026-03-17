@@ -32,7 +32,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public List<AddressResponse> getUserAddresses(Long userId) {
         return addressRepository.findByUserIdOrderByIsDefaultDescCreatedAtDesc(userId).stream()
-                .map(AddressResponse::fromEntity)
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -40,7 +40,7 @@ public class AddressServiceImpl implements AddressService {
     public AddressResponse getAddressById(Long addressId, Long userId) {
         Address address = addressRepository.findByIdAndUserId(addressId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
-        return AddressResponse.fromEntity(address);
+        return toResponse(address);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class AddressServiceImpl implements AddressService {
 
         address = addressRepository.save(address);
         logger.info("Created address {} for user {}", address.getId(), userId);
-        return AddressResponse.fromEntity(address);
+        return toResponse(address);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class AddressServiceImpl implements AddressService {
 
         address = addressRepository.save(address);
         logger.info("Updated address {} for user {}", addressId, userId);
-        return AddressResponse.fromEntity(address);
+        return toResponse(address);
     }
 
     @Override
@@ -111,5 +111,21 @@ public class AddressServiceImpl implements AddressService {
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
         addressRepository.delete(address);
         logger.info("Deleted address {} for user {}", addressId, userId);
+    }
+
+    private AddressResponse toResponse(Address address) {
+        return AddressResponse.builder()
+                .id(address.getId())
+                .fullName(address.getFullName())
+                .phone(address.getPhone())
+                .addressLine1(address.getAddressLine1())
+                .addressLine2(address.getAddressLine2())
+                .city(address.getCity())
+                .state(address.getState())
+                .postalCode(address.getPostalCode())
+                .country(address.getCountry())
+                .type(address.getType())
+                .isDefault(address.getIsDefault())
+                .build();
     }
 }

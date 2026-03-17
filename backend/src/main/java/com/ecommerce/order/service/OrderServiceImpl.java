@@ -7,6 +7,7 @@ import com.ecommerce.order.repository.OrderRepository;
 import com.ecommerce.order.dto.OrderRequest;
 import com.ecommerce.order.dto.OrderResponse;
 
+import com.ecommerce.address.dto.AddressResponse;
 import com.ecommerce.address.model.Address;
 import com.ecommerce.address.repository.AddressRepository;
 import com.ecommerce.cart.model.Cart;
@@ -27,6 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -54,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<OrderResponse> getUserOrders(Long userId, Pageable pageable) {
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
-                .map(OrderResponse::fromEntity);
+                .map(this::toResponse);
     }
 
     @Override
@@ -116,7 +119,7 @@ public class OrderServiceImpl implements OrderService {
 
         logger.info("Created order {} for user {}", order.getOrderNumber(), user.getEmail());
 
-        OrderResponse response = OrderResponse.fromEntity(order);
+        OrderResponse response = toResponse(order);
         emailService.sendOrderConfirmation(user.getEmail(), order.getOrderNumber(), response);
 
         return response;
@@ -126,14 +129,14 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse getOrderById(Long orderId, Long userId) {
         Order order = orderRepository.findByIdAndUserIdWithItems(orderId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        return OrderResponse.fromEntity(order);
+        return toResponse(order);
     }
 
     @Override
     public OrderResponse getOrderByNumber(String orderNumber) {
         Order order = orderRepository.findByOrderNumber(orderNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        return OrderResponse.fromEntity(order);
+        return toResponse(order);
     }
 
     @Override
@@ -156,6 +159,57 @@ public class OrderServiceImpl implements OrderService {
         order = orderRepository.save(order);
 
         logger.info("Cancelled order {}", order.getOrderNumber());
-        return OrderResponse.fromEntity(order);
+        return toResponse(order);
+    }
+
+    private OrderResponse toResponse(Order order) {
+        return OrderResponse.builder()
+                .id(order.getId())
+                .orderNumber(order.getOrderNumber())
+                .status(order.getStatus())
+                .subtotal(order.getSubtotal())
+                .shippingCost(order.getShippingCost())
+                .tax(order.getTax())
+                .totalAmount(order.getTotalAmount())
+                .paymentMethod(order.getPaymentMethod())
+                .notes(order.getNotes())
+                .createdAt(order.getCreatedAt())
+                .shippingAddress(order.getShippingAddress() != null
+                        ? toAddressResponse(order.getShippingAddress())
+                        : null)
+                .items(order.getItems() != null
+                        ? order.getItems().stream()
+                                .map(this::toOrderItemResponse)
+                                .collect(Collectors.toList())
+                        : Collections.emptyList())
+                .build();
+    }
+
+    private OrderResponse.OrderItemResponse toOrderItemResponse(OrderItem item) {
+        return OrderResponse.OrderItemResponse.builder()
+                .id(item.getId())
+                .productId(item.getProduct() != null ? item.getProduct().getId() : null)
+                .productName(item.getProductName())
+                .productImage(item.getProductImage())
+                .quantity(item.getQuantity())
+                .priceAtPurchase(item.getPriceAtPurchase())
+                .subtotal(item.getSubtotal())
+                .build();
+    }
+
+    private AddressResponse toAddressResponse(Address address) {
+        return AddressResponse.builder()
+                .id(address.getId())
+                .fullName(address.getFullName())
+                .phone(address.getPhone())
+                .addressLine1(address.getAddressLine1())
+                .addressLine2(address.getAddressLine2())
+                .city(address.getCity())
+                .state(address.getState())
+                .postalCode(address.getPostalCode())
+                .country(address.getCountry())
+                .type(address.getType())
+                .isDefault(address.getIsDefault())
+                .build();
     }
 }
