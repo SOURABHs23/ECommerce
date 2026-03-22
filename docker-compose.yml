@@ -1,15 +1,13 @@
 version: '3.8'
 
-# Reads variables from backend/.env automatically
-env_file:
-  - backend/.env
-
 services:
   # ──────────────── PostgreSQL Database ────────────────
   db:
     image: postgres:16-alpine
     container_name: ecommerce-db
     restart: unless-stopped
+    env_file:
+      - backend/.env
     environment:
       POSTGRES_DB: ecommerce
       POSTGRES_USER: ${DB_USERNAME}
@@ -19,7 +17,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ecommerce"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ecommerce"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -34,19 +32,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    env_file:
+      - backend/.env
     environment:
       # Override DB_URL to point to Docker container instead of localhost
       DB_URL: jdbc:postgresql://db:5432/ecommerce
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
-      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
-      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
-      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
-      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
-      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER}
-      # CORS: allow requests from Nginx frontend
-      APP_CORS_ALLOWED-ORIGINS: http://localhost,http://frontend
     ports:
       - "8080:8080"
 
