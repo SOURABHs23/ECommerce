@@ -1,0 +1,8 @@
+target/
+.idea/
+.mvn/
+*.iml
+.env
+.DS_Store
+mvnw
+mvnw.cmd
