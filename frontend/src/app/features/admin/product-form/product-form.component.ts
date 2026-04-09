@@ -107,7 +107,7 @@ export class ProductFormComponent implements OnInit {
       price: this.productForm.value.price,
       stock: this.productForm.value.stockQuantity,
       categoryId: this.productForm.value.categoryId,
-      images: images
+      imageUrls: images
     };
 
     const request = this.isEditMode && this.productId

@@ -21,7 +21,7 @@ export interface ProductRequest {
     sku?: string;
     brand?: string;
     categoryId?: number;
-    images?: string[];
+    imageUrls?: string[];
     featured?: boolean;
 }
 
