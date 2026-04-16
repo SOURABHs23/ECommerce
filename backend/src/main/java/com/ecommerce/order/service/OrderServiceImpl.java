@@ -20,6 +20,10 @@ import com.ecommerce.product.model.Product;
 import com.ecommerce.product.repository.ProductRepository;
 import com.ecommerce.user.model.User;
 import com.ecommerce.user.service.UserService;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -32,6 +36,8 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
+
 public class OrderServiceImpl implements OrderService {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
@@ -42,17 +48,6 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final EmailService emailService;
     private final UserService userService;
-
-    public OrderServiceImpl(OrderRepository orderRepository, CartRepository cartRepository,
-            AddressRepository addressRepository, ProductRepository productRepository,
-            EmailService emailService, UserService userService) {
-        this.orderRepository = orderRepository;
-        this.cartRepository = cartRepository;
-        this.addressRepository = addressRepository;
-        this.productRepository = productRepository;
-        this.emailService = emailService;
-        this.userService = userService;
-    }
 
     @Override
     public Page<OrderResponse> getUserOrders(Long userId, Pageable pageable) {
