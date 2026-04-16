@@ -4,6 +4,7 @@ frontend/node_modules
 # Environment variables (contains secrets)
 backend/.env
 .env
+ecommerce.pem
 
 # IDE
 .idea/
