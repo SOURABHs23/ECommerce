@@ -28,7 +28,6 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    @Async
     public void sendOrderConfirmation(String to, String orderNumber, OrderResponse orderDetails) {
         try {
             logger.info("Sending order confirmation email to: {}", to);

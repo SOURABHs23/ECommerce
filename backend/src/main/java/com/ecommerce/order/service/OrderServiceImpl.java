@@ -15,14 +15,14 @@ import com.ecommerce.cart.model.CartItem;
 import com.ecommerce.cart.repository.CartRepository;
 import com.ecommerce.common.exception.BadRequestException;
 import com.ecommerce.common.exception.ResourceNotFoundException;
-import com.ecommerce.notification.service.EmailService;
+import com.ecommerce.notification.event.OrderEventProducer;
+import com.ecommerce.notification.event.OrderPlacedEvent;
 import com.ecommerce.product.model.Product;
 import com.ecommerce.product.repository.ProductRepository;
 import com.ecommerce.user.model.User;
 import com.ecommerce.user.service.UserService;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final AddressRepository addressRepository;
     private final ProductRepository productRepository;
-    private final EmailService emailService;
+    private final OrderEventProducer orderEventProducer;
     private final UserService userService;
 
     @Override
@@ -115,8 +115,20 @@ public class OrderServiceImpl implements OrderService {
         logger.info("Created order {} for user {}", order.getOrderNumber(), user.getEmail());
 
         OrderResponse response = toResponse(order);
-        emailService.sendOrderConfirmation(user.getEmail(), order.getOrderNumber(), response);
+        OrderPlacedEvent event = new OrderPlacedEvent(
+                order.getOrderNumber(),
+                user.getEmail(),
+                user.getFirstname() + " " + user.getLastname(),
+                order.getTotalAmount(),
+                order.getItems().stream()
+                        .map(item -> new OrderPlacedEvent.OrderItemDetail(
+                                item.getProductName(),
+                                item.getQuantity(),
+                                item.getPriceAtPurchase(),
+                                item.getSubtotal()))
+                        .collect(Collectors.toList()));
 
+        orderEventProducer.publishOrderPlaced(event);
         return response;
     }
 
